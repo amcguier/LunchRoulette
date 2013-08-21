@@ -16,7 +16,14 @@ def primary():
 #Add a person to the python database
 #Return true if added, false if they've already exist
 def addPerson(first_name,last_name,email_address,department):
-    return true
+	if None == mongo.people.find_one({"email": email_address}):
+		entry = {"first": first_name,"last": last_name, "email": email_address,"department": department, "priority": 0}
+		mongo.people.insert(entry)
+		return true
+return false
+
+
+ 
 
 #For now, returning an empty list till you figure out what to return
 #Given a set number of people to include do the following
@@ -24,6 +31,14 @@ def addPerson(first_name,last_name,email_address,department):
 #database with 0 priority
 #Randomly select a new group of people to go to lunch respecting priorities
 def createNewLunchSet(number_participants):
+	if mongo.ls.find().count() != 0:
+		for person in mongo.ls.find():
+			mongo.people.update({"first": person["first"], "last": person["last"], "email": person["email"], "department": person["department"], {"$set": {"priority": 0}}})
+			mongo.ls.remove(person)
+
+
+
+
     return []
 
 #If this person is in the current lunch set
