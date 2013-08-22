@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template,request,redirect,url_for,Response
 from flask.ext.pymongo import PyMongo
+from random import choice
 
 
 appName = "LunchRoulette"
@@ -19,7 +20,7 @@ def addPerson(first_name,last_name,email_address,department):
 	if None == mongo.people.find_one({"email": email_address}):
             entry = {"first": first_name,"last": last_name,
                      "email": email_address,"department": department, 
-                     "priority": 0}
+                     "priority": 1}
             mongo.people.insert(entry)
             return true
         else:
@@ -36,12 +37,28 @@ def addPerson(first_name,last_name,email_address,department):
 def createNewLunchSet(number_participants):
 	if mongo.ls.find().count() != 0:
 		for person in mongo.ls.find():
-			mongo.people.update({"email": person["email"]}, {"$set": {"priority": 0}})
+			mongo.people.update({"email": person["email"]}, 
+								{"$set": {"priority": 0}})
 			mongo.ls.remove(person)
 
+	eligable = mongo.people.find({"priority": {"$gt": 0}})
+	weightedList = []
+	for entry in eligable:
+		i = entry["priority"]
+		for j in range(i):
+			weightedList.append({"email": entry["email"]})
 
+	for k in range(number_participants):
+		selected = choice(weightedList)
+		mongo.ls.insert(mongo.people.find({"email" :selected["email"]}))
+		try:
+			while(1):
+				weightedList.remove(selected)
+		except:
+			pass
 
-    return []
+	updatePriority()
+return []
 
 #If this person is in the current lunch set
 #put them back into the main database at their previous priority
@@ -51,6 +68,15 @@ def skipThisPerson(email):
 
 #remove this person entirely from the database.
 def removePerson(email):
+
+#Update priorities of people not chosen in the lunch set
+#Returns true upon success
+def updatePriority():
+	for person in mongo.people.find():
+		if mongo.ls.find(person) == None:
+			mongo.people.update({"email": person["email"]},
+								{"$set": {"priority": person["priority"]+1}})
+return true
     
 
 if __name__ == '__main__':
