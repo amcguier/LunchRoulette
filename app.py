@@ -14,21 +14,21 @@ def primary():
 
 @app.route('/add')
 def addPersonPage():
-    render_template('addPerson.html')
+    return render_template('addPerson.html')
 
 
 
 #Add a person to the python database
 #Return true if added, false if they've already exist
 def addPerson(first_name,last_name,email_address,department):
-	if None == mongo.people.find_one({"email": email_address}):
-            entry = {"first": first_name,"last": last_name,
-                     "email": email_address,"department": department, 
-                     "priority": 0}
-            mongo.people.insert(entry)
-            return true
-        else:
-            return false
+    if None == mongo.people.find_one({"email": email_address}):
+        entry = {"first": first_name,"last": last_name,
+                 "email": email_address,"department": department, 
+                 "priority": 0}
+        mongo.people.insert(entry)
+        return true
+    else:
+        return false
 
 
  
@@ -39,13 +39,10 @@ def addPerson(first_name,last_name,email_address,department):
 #database with 0 priority
 #Randomly select a new group of people to go to lunch respecting priorities
 def createNewLunchSet(number_participants):
-	if mongo.ls.find().count() != 0:
-		for person in mongo.ls.find():
-			mongo.people.update({"email": person["email"]}, {"$set": {"priority": 0}})
-			mongo.ls.remove(person)
-
-
-
+    if mongo.ls.find().count() != 0:
+        for person in mongo.ls.find():
+            mongo.people.update({"email": person["email"]}, {"$set": {"priority": 0}})
+            mongo.ls.remove(person)        
     return []
 
 #If this person is in the current lunch set
@@ -56,7 +53,7 @@ def skipThisPerson(email):
 
 #remove this person entirely from the database.
 def removePerson(email):
-    
+    return true
 
 if __name__ == '__main__':
     app.run(debug=True)
