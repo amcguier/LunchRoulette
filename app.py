@@ -41,6 +41,31 @@ def createNewLunchSet(number_participants):
 								{"$set": {"priority": 0}})
 			mongo.ls.remove(person)
 
+	addToLunchSet(number_participants)
+	updatePriority()
+	return []
+
+
+
+
+#If this person is in the current lunch set
+#put them back into the main database at their previous priority
+#select someone else randomly to take their place in this lunch set
+def skipThisPerson(email):
+    person = mongo.ls.find({"email": email})
+    if person == None:
+    	return false
+    mongo.people.update({"email": email}, {"$set": {"priority": person["priority"]+1}})
+    mongo.ls.remove({"email": email})
+    addToLunchSet(1)
+    return true
+
+
+
+
+#Add specified number of people to the lunch set
+#Returns true upon success
+def addToLunchSet(number_of_additions):
 	eligable = mongo.people.find({"priority": {"$gt": 0}})
 	weightedList = []
 	for entry in eligable:
@@ -48,26 +73,33 @@ def createNewLunchSet(number_participants):
 		for j in range(i):
 			weightedList.append({"email": entry["email"]})
 
-	for k in range(number_participants):
+	for k in range(number_of_additions):
 		selected = choice(weightedList)
 		mongo.ls.insert(mongo.people.find({"email" :selected["email"]}))
 		try:
 			while(1):
 				weightedList.remove(selected)
 		except:
-			pass
+			pass	
+	return true
 
-	updatePriority()
-return []
 
-#If this person is in the current lunch set
-#put them back into the main database at their previous priority
-#select someone else randomly to take their place in this lunch set
-def skipThisPerson(email):
-    return true
+
 
 #remove this person entirely from the database.
+#Return true upon success, false when email doesn't exist
 def removePerson(email):
+	if mongo.ls.find({"email": email}) != None:
+		skipThisPerson(email)		
+
+	try:
+		mongo.people.remove({"email": email})
+	except:
+		return false
+	return true
+	
+
+
 
 #Update priorities of people not chosen in the lunch set
 #Returns true upon success
@@ -76,8 +108,10 @@ def updatePriority():
 		if mongo.ls.find(person) == None:
 			mongo.people.update({"email": person["email"]},
 								{"$set": {"priority": person["priority"]+1}})
-return true
+	return true
     
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
