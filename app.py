@@ -12,6 +12,11 @@ def primary():
     return render_template('main.html')
 
 
+@app.route('/add')
+def addPersonPage():
+    render_template('addPerson.html')
+
+
 
 #Add a person to the python database
 #Return true if added, false if they've already exist
