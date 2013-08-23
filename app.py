@@ -28,6 +28,14 @@ def getAllEmails():
 	js = flask.json.dumps([x['email'] for x in mongo.db.people.find()])
 	return Response(js,status=200,mimetype='application/json')
 
+@app.route('/newPerson', methods=['POST'])
+def addNewPerson():
+
+	if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
+			return Response("true",status=200,mimetype='application/json')
+	else:
+			return Response("false",status=200,mimetype='application/json')
+
 
 #Add a person to the python database
 #Return true if added, false if they've already exist
