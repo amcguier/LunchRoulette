@@ -32,7 +32,7 @@
 </div>
 </div>
 <p>
-  <button class="btn btn-large btn-primary" type="submit" >Confirm</button>
+  <button class="btn btn-large btn-primary" type="type" >Confirm</button>
 </p>
 
 </form>
@@ -40,15 +40,18 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
- $(document).ready(function(){
-    $('#inputForm').submit(function(){
-        $.post('/newPerson',{"email":document.getElementById("firstInput"),
-                      "first":document.getElementById("secondInput"),
-                      "last":document.getElementById("thirdInput"),
-                      "department": document.getElementById("fourthInput")})
-
-        return false;
-    })
+  $(document).ready(function(){
+  $('#inputForm').submit(function(evt){
+                          evt.preventDefault();
+                          $.post('/newPerson',{"email":$("#firstInput").val(),
+                                               "first":$("#secondInput").val(),
+                                               "last":$("#thirdInput").val(),
+                                               "department": $("#fourthInput").val()}, function(data,textStatus){
+                                                alert(textStatus)
+                          }
+                          )
+                           return false;
+                         })
 
  })
 

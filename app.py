@@ -30,24 +30,23 @@ def getAllEmails():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-
 	if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
-			return Response("true",status=200,mimetype='application/json')
-	else:
-			return Response("false",status=200,mimetype='application/json')
+            return Response("True",status=200,mimetype='application/json')
+ 	else:
+            return Response("False",status=200,mimetype='application/json')
 
 
 #Add a person to the python database
-#Return true if added, false if they've already exist
+#Return True if added, False if they've already exist
 def addPerson(first_name,last_name,email_address,department):
 	if None == mongo.db.people.find_one({"email": email_address}):
             entry = {"first": first_name,"last": last_name,
                      "email": email_address,"department": department, 
                      "priority": 1}
             mongo.db.people.insert(entry)
-            return true
+            return True
         else:
-            return false
+            return False
 
 
  
@@ -74,15 +73,15 @@ def createNewLunchSet(number_participants):
 #If this person is in the current lunch set
 #put them back into the main database at their previous priority
 #select someone else randomly to take their place in this lunch set
-#returns true upon success, false upon failure
+#returns True upon success, False upon failure
 def skipThisPerson(email):
     person = mongo.db.ls.find({"email": email})
     if person == None:
-    	return false
+    	return False
     mongo.db.people.update({"email": email}, {"$set": {"priority": person["priority"]+1}})
     mongo.db.ls.remove({"email": email})
     addToLunchSet(1)
-    return true
+    return True
 
 
 
@@ -114,7 +113,7 @@ def addToLunchSet(number_of_additions):
 
 
 #remove this person entirely from the database.
-#Return true upon success, false when email doesn't exist
+#Return True upon success, False when email doesn't exist
 def removePerson(email):
 	if mongo.db.ls.find({"email": email}) != None:
 		skipThisPerson(email)		
@@ -122,20 +121,20 @@ def removePerson(email):
 	try:
 		mongo.db.people.remove({"email": email})
 	except:
-		return false
-	return true
+		return False
+	return True
 	
 
 
 
 #Update priorities of people not chosen in the lunch set
-#Returns true upon success
+#Returns True upon success
 def updatePriority():
 	for person in mongo.db.people.find():
 		if mongo.db.ls.find(person) == None:
 			mongo.db.people.update({"email": person["email"]},
 								{"$set": {"priority": person["priority"]+1}})
-	return true
+	return True
     
 
 
