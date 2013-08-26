@@ -35,6 +35,13 @@ def addNewPerson():
  	else:
             return Response("False",status=200,mimetype='application/json')
 
+@app.route('/removeSelected', methods=['POST'])
+def removeSelected():
+	if removePerson(request.form["email"]):
+		return Response("True",status=200,mimetype='application/json')
+	else:
+		return Response("False",status=200,mimetype='application/json')
+
 
 #Add a person to the python database
 #Return True if added, False if they've already exist
@@ -75,8 +82,8 @@ def createNewLunchSet(number_participants):
 #select someone else randomly to take their place in this lunch set
 #returns True upon success, False upon failure
 def skipThisPerson(email):
-    person = mongo.db.ls.find({"email": email})
-    if person == None:
+    
+    if mongo.db.ls.find({"email": email}).count() == 0:
     	return False
     mongo.db.people.update({"email": email}, {"$set": {"priority": person["priority"]+1}})
     mongo.db.ls.remove({"email": email})
@@ -115,7 +122,7 @@ def addToLunchSet(number_of_additions):
 #remove this person entirely from the database.
 #Return True upon success, False when email doesn't exist
 def removePerson(email):
-	if mongo.db.ls.find({"email": email}) != None:
+	if mongo.db.ls.find({"email": email}).count() >0:
 		skipThisPerson(email)		
 
 	try:
@@ -131,7 +138,7 @@ def removePerson(email):
 #Returns True upon success
 def updatePriority():
 	for person in mongo.db.people.find():
-		if mongo.db.ls.find(person) == None:
+		if mongo.db.ls.find(person).count() == 0:
 			mongo.db.people.update({"email": person["email"]},
 								{"$set": {"priority": person["priority"]+1}})
 	return True

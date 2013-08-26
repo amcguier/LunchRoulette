@@ -43,9 +43,9 @@
   $(document).ready(function(){
   $('#inputForm').submit(function(evt){
                           evt.preventDefault();
-                          $.post('/newPerson',{"email":$("#firstInput").val(),
-                                               "first":$("#secondInput").val(),
-                                               "last":$("#thirdInput").val(),
+                          $.post('/newPerson',{"first":$("#firstInput").val(),
+                                               "last":$("#secondInput").val(),
+                                               "email":$("#thirdInput").val(),
                                                "department": $("#fourthInput").val()}, function(data,textStatus){
                                                 alert(textStatus)
                           }
