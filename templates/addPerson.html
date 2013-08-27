@@ -41,14 +41,30 @@
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-  $('#inputForm').submit(function(evt){
+ var inForm = $('#inputForm')
+  inForm.submit(function(evt){
     evt.preventDefault();
-    $.post('/newPerson',{"first":$("#firstInput").val(),
+    $.ajax({
+      type:"POST",
+      url: '/newPerson',
+      data: {"first":$("#firstInput").val(),
      "last":$("#secondInput").val(),
      "email":$("#thirdInput").val(),
-     "department": $("#fourthInput").val()}, function(data,textStatus){
-      alert(textStatus)
+     "department": $("#fourthInput").val()},
+     dataType: "json",
+     success: function(msg){
+      //alert("Status "+msg);
+      inForm[0].reset(); }
+      
+    
     })
+
+    //$.post('/newPerson',{"first":$("#firstInput").val(),
+     //"last":$("#secondInput").val(),
+     //"email":$("#thirdInput").val(),
+     //"department": $("#fourthInput").val()}, function(data,textStatus,junk){
+      //alert(textStatus);
+    //})
     return false;
   })
 

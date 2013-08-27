@@ -31,9 +31,9 @@ def getAllEmails():
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
 	if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
-            return Response("True",status=200,mimetype='application/json')
+            return Response(flask.json.dumps(True),status=200,mimetype='application/json')
  	else:
-            return Response("False",status=200,mimetype='application/json')
+            return Response(flask.json.dumps(False),status=200,mimetype='application/json')
 
 @app.route('/removeSelected', methods=['POST'])
 def removeSelected():
@@ -54,6 +54,8 @@ def addPerson(first_name,last_name,email_address,department):
             return True
         else:
             return False
+
+
 
 
  
