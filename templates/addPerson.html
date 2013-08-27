@@ -40,21 +40,19 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function(){
+$(document).ready(function(){
   $('#inputForm').submit(function(evt){
-                          evt.preventDefault();
-                          $.post('/newPerson',{"first":$("#firstInput").val(),
-                                               "last":$("#secondInput").val(),
-                                               "email":$("#thirdInput").val(),
-                                               "department": $("#fourthInput").val()}, function(data,textStatus){
-                                                alert(textStatus)
-                          }
-                          )
-                           location.reload(true); //Do we need to reload the page every time?
-                           return false;
-                         })
+    evt.preventDefault();
+    $.post('/newPerson',{"first":$("#firstInput").val(),
+     "last":$("#secondInput").val(),
+     "email":$("#thirdInput").val(),
+     "department": $("#fourthInput").val()}, function(data,textStatus){
+      alert(textStatus)
+    })
+    return false;
+  })
 
- })
+})
 
 </script>
 

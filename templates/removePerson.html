@@ -6,7 +6,7 @@
 	<h4>Please select person to remove</h4>
 </head>
 <body>
-	<form id="removeSel" onsubmit="return confirm('Do you reall wish to remove this person?');">
+	<form id="removeSel">
 		<select id="toRemove">
 		</select>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
@@ -30,19 +30,24 @@
 		</p>
 	</form>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-<script src="static/js/bootstrap.min.js"></script>
-<script type="text/javascript">
+	<script src="static/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
 	$(document).ready(function(){
 		$('#removeSel').submit(function(evt){
 			evt.preventDefault();
 			var opt = $("#toRemove").find("option:selected");
 			if (opt.length > 0){
-				$.post('/removeSelected', {"email":opt.text()});
-				location.reload(true);
+				var temp = window.confirm("Are you sure?"); //Fix this line
+				//if window.confirm("Are you sure?"){
+					if (temp){
+					$.post('/removeSelected', {"email":opt.text()});
+					opt.remove();
+
+				}
 			}
 			return true;
 		})
 	})
 	</script>
-	</body>
-	</html>
+</body>
+</html>
