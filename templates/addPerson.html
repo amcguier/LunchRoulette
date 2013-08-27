@@ -51,10 +51,13 @@ $(document).ready(function(){
      "last":$("#secondInput").val(),
      "email":$("#thirdInput").val(),
      "department": $("#fourthInput").val()},
-     dataType: "json",
      success: function(msg){
-      //alert("Status "+msg);
-      inForm[0].reset(); }
+      if (msg){
+        alert("Successfully added");}
+      else {alert("Already exists");} 
+      inForm[0].reset(); },
+      dataType: "json"
+   
       
     
     })
