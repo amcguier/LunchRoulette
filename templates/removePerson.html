@@ -6,7 +6,7 @@
 	<h4>Please select person to remove</h4>
 </head>
 <body>
-	<form id="removeSel">
+	<form id="removeSel" onsubmit="return confirm('Do you reall wish to remove this person?');">
 		<select id="toRemove">
 		</select>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
@@ -38,6 +38,7 @@
 			var opt = $("#toRemove").find("option:selected");
 			if (opt.length > 0){
 				$.post('/removeSelected', {"email":opt.text()});
+				location.reload(true);
 			}
 			return true;
 		})
