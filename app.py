@@ -13,11 +13,9 @@ mongo = PyMongo(app)
 def primary():
     return render_template('main.html')
 
-
 @app.route('/add')
 def addPersonPage():
     return render_template('addPerson.html')	
-
 
 @app.route('/remove')
 def removePerson():
@@ -27,6 +25,16 @@ def removePerson():
 def getAllEmails():
 	js = flask.json.dumps([x['email'] for x in mongo.db.people.find()])
 	return Response(js,status=200,mimetype='application/json')
+
+@app.route('/ls')
+def getLS():
+	js = flask.json.dumps([x['email'] for x in mongo.ls.people.find()])
+	return Response(js,status=200,mimetype='application/json')
+
+@app.route('/newLS', methods=['POST'])
+def newLS():
+	createNewLunchSet(request[0])
+	return
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
@@ -71,7 +79,6 @@ def createNewLunchSet(number_participants):
 			mongo.db.people.update({"email": person["email"]}, 
 								{"$set": {"priority": 0}})
 			mongo.db.ls.remove(person)
-
 	lunchList = addToLunchSet(number_participants)
 	updatePriority()
 	return lunchList
@@ -105,7 +112,6 @@ def addToLunchSet(number_of_additions):
 		i = entry["priority"]
 		for j in range(i):
 			weightedList.append({"email": entry["email"]})
-
 	for k in range(number_of_additions):
 		selected = choice(weightedList)
 		person = [x for x in eligable if x["email"] == selected].pop()
@@ -126,7 +132,6 @@ def addToLunchSet(number_of_additions):
 def removePerson(email):
 	if mongo.db.ls.find({"email": email}).count() >0:
 		skipThisPerson(email)		
-
 	try:
 		mongo.db.people.remove({"email": email})
 	except:

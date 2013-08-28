@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Lunch Roulette</title>
-  </head>
-  <body>
-    <div class="container">
-      Hello World
-    </div>
-  </body>
+<head>
+	<title>Lunch Roulette</title>
+</head>
+<body>
+	<div class="container">
+		<form class="form-horizontal" id="numLS">
+			<div class="control-group">
+				<label class="control-label" for="numLS">Please enter the number of participants for new lunch set:</label>
+				<div class="controls">
+					<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
+				</div>
+			</div>
+			<button class="btn btn-large btn-primary" type="type" onclick="fillNewLS()">Confirm</button>
+		</form>
+	</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+	<script type="text/javascript">
+	function fillNewLS(){
+		var temp = $('#numInNewLS').val()
+		var temp1 = parseInt(temp,10)
+		$.post('/newLS',temp1)
+	}
+	</script>
+	<script src="static/js/mustache.js"></script>
+	<script type="text/javascript"></script>
+</body>
 </html>
