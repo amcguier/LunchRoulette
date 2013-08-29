@@ -34,8 +34,9 @@
 		$(document).ready(function(){
 			$.get('/ls',function(data){
 				$("#forTemplate").empty();
-				var test = Mustache.to_html($("#lsTemplate"),data);
-				$("#forTemplate").append(test);
+				var html = Mustache.render($("#lsTemplate").text(),data);
+				$("#forTemplate").append(html);
+				//$("#forTemplate").append($("lsTemplate"));
 				//get template text from element on page
 				//use mustache.js to render this template
 				//stick html generated on page
@@ -45,7 +46,7 @@
 		<script id="lsTemplate" type="text/template">
 		<table>
 			{{#lunchset}}
-				<tr><td>{{"first"}}</td><td>{{"last"}}</td><td>{{"email"}}</td></tr>
+				<tr><td>{{first}}</td><td>{{last}}</td><td>{{email}}</td></tr>
 			{{/lunchset}}
 		</table>
 		</script>
