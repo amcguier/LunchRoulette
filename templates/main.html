@@ -12,18 +12,46 @@
 					<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
 				</div>
 			</div>
-			<button class="btn btn-large btn-primary" type="type" onclick="fillNewLS()">Confirm</button>
+			<button class="btn btn-large btn-primary" type="type">Confirm</button>
 		</form>
 	</div>
+	<div id="forTemplate">
+	</div>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+	<script src="static/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-	function fillNewLS(){
-		var temp = $('#numInNewLS').val()
-		var temp1 = parseInt(temp,10)
-		$.post('/newLS',temp1)
-	}
+	$(document).ready(function(){
+		var numForm = $("#numLS")
+		numForm.submit(function(evt){
+			evt.preventDefault();
+			$.post('/newLS',{"num":$('#numInNewLS').val()});
+		})
+	})
 	</script>
-	<script src="static/js/mustache.js"></script>
-	<script type="text/javascript"></script>
+	<div>
+		<script src="static/js/mustache.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$.get('/ls',function(data){
+				$("#forTemplate").empty();
+				var test = Mustache.to_html($("#lsTemplate"),data);
+				$("#forTemplate").append(test);
+				//get template text from element on page
+				//use mustache.js to render this template
+				//stick html generated on page
+			})
+		})	
+		</script>
+		<script id="lsTemplate" type="text/template">
+		<table>
+			{{#lunchset}}
+				<tr><td>{{"first"}}</td><td>{{"last"}}</td><td>{{"email"}}</td></tr>
+			{{/lunchset}}
+		</table>
+		</script>
+
+
+
+	</div>
 </body>
 </html>

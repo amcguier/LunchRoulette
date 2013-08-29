@@ -37,16 +37,14 @@
 			evt.preventDefault();
 			var opt = $("#toRemove").find("option:selected");
 			if (opt.length > 0){
-				var temp = window.confirm("Are you sure?"); //Fix this line
-				//if window.confirm("Are you sure?"){
-					if (temp){
+				if (window.confirm("Are you sure?")){
 					$.post('/removeSelected', {"email":opt.text()});
 					opt.remove();
-
 				}
 			}
-			return true;
-		})
+		}
+		return true;
+	})
 	})
 	</script>
 </body>

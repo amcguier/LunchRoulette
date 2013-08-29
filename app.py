@@ -1,6 +1,6 @@
 import flask
 from flask import Flask
-from flask import render_template,request,redirect,url_for,Response,jsonify
+from flask import render_template,request,redirect,url_for,Response,jsonify,send_from_directory
 from flask.ext.pymongo import PyMongo
 from random import choice
 
@@ -11,7 +11,7 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def primary():
-    return render_template('main.html')
+    return send_from_directory('templates','main.html')
 
 @app.route('/add')
 def addPersonPage():
@@ -28,13 +28,14 @@ def getAllEmails():
 
 @app.route('/ls')
 def getLS():
-	js = flask.json.dumps([x['email'] for x in mongo.ls.people.find()])
+	#js = flask.json.dumps({"lunchset":[x for x in mongo.db.ls.find({"first":1,"last":1,"email":1})]})	wasn't returning anything.  Maybe bad syntax?
+	js = flask.json.dumps({"lunchset": [x for x in mongo.db.ls.find()]})
 	return Response(js,status=200,mimetype='application/json')
 
 @app.route('/newLS', methods=['POST'])
 def newLS():
-	createNewLunchSet(request[0])
-	return
+	createNewLunchSet(int(request.form['num']))
+	return Response(flask.json.dumps(True),status=200,mimetype='application/json') #Should we change this return value? 
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
@@ -114,9 +115,12 @@ def addToLunchSet(number_of_additions):
 			weightedList.append({"email": entry["email"]})
 	for k in range(number_of_additions):
 		selected = choice(weightedList)
-		person = [x for x in eligable if x["email"] == selected].pop()
-		mongo.db.ls.insert(person)
-		lunchList.append(person)
+		#person = [x for x in eligable if x["email"] == selected].pop()
+		#mongo.db.ls.insert(person)
+		#lunchList.append(person)
+		#Above is old code.  Remove if not used
+		mongo.db.ls.insert(mongo.db.people.find(selected))
+		lunchList.append(selected)
 		try:
 			while(1):
 				weightedList.remove(selected)
