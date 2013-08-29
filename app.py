@@ -46,9 +46,16 @@ def addNewPerson():
 @app.route('/removeSelected', methods=['POST'])
 def removeSelected():
 	if removePerson(request.form["email"]):
-		return Response("True",status=200,mimetype='application/json')
+		return Response("true",status=200,mimetype='application/json')
 	else:
-		return Response("False",status=200,mimetype='application/json')
+		return Response("false",status=200,mimetype='application/json')
+
+@app.route('/toSkip', methods=['POST'])
+def skipEmail():
+	if skipThisPerson(request.form['email']):
+		return Response("true",status=200,mimetype='application/json')
+	else:
+		return Response("false",status=200,mimetype='application/json')
 
 
 #Add a person to the python database
@@ -94,6 +101,7 @@ def skipThisPerson(email):
     
     if mongo.db.ls.find({"email": email}).count() == 0:
     	return False
+    person = mongo.db.ls.find_one({"email":email})
     mongo.db.people.update({"email": email}, {"$set": {"priority": person["priority"]+1}})
     mongo.db.ls.remove({"email": email})
     addToLunchSet(1)

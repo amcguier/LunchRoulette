@@ -24,7 +24,10 @@
 		var numForm = $("#numLS")
 		numForm.submit(function(evt){
 			evt.preventDefault();
-			$.post('/newLS',{"num":$('#numInNewLS').val()});
+			$.post('/newLS',{"num":$('#numInNewLS').val()},function(){
+				location.reload(); //There has to be a better way to render a new table then reloading the page
+			})
+
 		})
 	})
 	</script>
@@ -36,20 +39,26 @@
 				$("#forTemplate").empty();
 				var html = Mustache.render($("#lsTemplate").text(),data);
 				$("#forTemplate").append(html);
-				//$("#forTemplate").append($("lsTemplate"));
-				//get template text from element on page
-				//use mustache.js to render this template
-				//stick html generated on page
 			})
 		})	
 		</script>
 		<script id="lsTemplate" type="text/template">
-		<table>
+		<p><b>Current Lunch Set</b></p>
+		<table border='1'>
+		<tr><td>First Name</td><td>Last Name</td><td>Email Address</td><td>Skip?</td></tr>
 			{{#lunchset}}
-				<tr><td>{{first}}</td><td>{{last}}</td><td>{{email}}</td></tr>
+				<tr><td>{{first}}</td><td>{{last}}</td><td>{{email}}</td><td><button class="btn btn-large btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td></tr>
 			{{/lunchset}}
 		</table>
 		</script>
+		<script>
+		function replaceFun(email){
+			$.post('/toSkip',{"email":email},function(){
+				location.reload();
+			})
+		}
+		</script>
+
 
 
 
