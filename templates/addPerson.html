@@ -31,51 +31,33 @@
   <input type="text" id="fourthInput" placeholder="Department"/>
 </div>
 </div>
-<p>
-  <button class="btn btn-large btn-primary" type="type" >Confirm</button>
-</p>
-
+<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 </form>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
- var inForm = $('#inputForm')
+  var inForm = $('#inputForm')
   inForm.submit(function(evt){
     evt.preventDefault();
     $.ajax({
       type:"POST",
       url: '/newPerson',
       data: {"first":$("#firstInput").val(),
-     "last":$("#secondInput").val(),
-     "email":$("#thirdInput").val(),
-     "department": $("#fourthInput").val()},
-     success: function(msg){
-      if (msg){
-        alert("Successfully added");}
-      else {alert("Already exists");} 
-      inForm[0].reset(); },
-      dataType: "json"
-   
-      
-    
+      "last":$("#secondInput").val(),
+      "email":$("#thirdInput").val(),
+      "department": $("#fourthInput").val()},
+      dataType:'json',
+      success: function(msg){
+        if (msg){alert("Successfully added");}
+        else {alert("Already exists");} 
+        inForm[0].reset(); 
+      }         
     })
-
-    //$.post('/newPerson',{"first":$("#firstInput").val(),
-     //"last":$("#secondInput").val(),
-     //"email":$("#thirdInput").val(),
-     //"department": $("#fourthInput").val()}, function(data,textStatus,junk){
-      //alert(textStatus);
-    //})
     return false;
   })
-
 })
-
 </script>
-
-
-
 </body>
 </html>

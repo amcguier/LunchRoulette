@@ -21,13 +21,11 @@
 						dd.append(
 							$('<option></option>').val(val).html(text));
 					})
-
-				});
-		});
+				}
+			)
+		})
 		</script>
-		<p>
-			<button class="btn btn-large btn-primary" type="type" >Confirm</button>
-		</p>
+		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 	</form>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 	<script src="static/js/bootstrap.min.js"></script>
@@ -42,9 +40,8 @@
 					opt.remove();
 				}
 			}
-		}
-		return true;
-	})
+			return true;
+		})
 	})
 	</script>
 </body>
