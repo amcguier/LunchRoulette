@@ -26,7 +26,7 @@
 		var numForm = $("#numLS")
 		numForm.submit(function(evt){
 			evt.preventDefault();
-			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){ //why isn't this working?
+			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
 				if(msg){location.reload();}
 				else {alert("Invalid input");} //Ask about better way to refresh table without reloading the entire page
 			})
@@ -53,7 +53,7 @@
 					<td>{{first}}</td>
 					<td>{{last}}</td>
 					<td>{{email}}</td>
-					<td><button class="btn  btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
+					<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
 				</tr>
 			{{/lunchset}}
 		</table>
