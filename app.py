@@ -106,17 +106,21 @@ def skipThisPerson(email):
     temp = person["priority"]
     mongo.db.people.update({"email":email},{"$set":{"priority": 0}})
     mongo.db.ls.remove({"email": email})
-    addToLunchSet(1)
-    mongo.db.people.update({"email": email}, {"$set": {"priority": temp+1}})
-    return True
+    if (addToLunchSet(1)):
+    	mongo.db.people.update({"email": email}, {"$set": {"priority": temp+1}})
+    	return True
+    else:
+    	return False
 
 
 
 
 #Add specified number of people to the lunch set
-#Returns list of lunch set
+#Returns True upon success or false upon failure
 def addToLunchSet(number_of_additions):
 	eligable = mongo.db.people.find({"priority": {"$gt": 0}})
+	if (eligable.count() == 0):
+		return False
 	lunchList = []
 	weightedList = []
 	for entry in eligable:
@@ -132,7 +136,7 @@ def addToLunchSet(number_of_additions):
 				weightedList.remove(selected)
 		except:
 			pass	
-	return lunchList
+	return True
 
 
 

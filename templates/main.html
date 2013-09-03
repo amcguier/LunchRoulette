@@ -60,8 +60,12 @@
 		</script>
 		<script>
 		function replaceFun(email){
-			$.post('/toSkip',{"email":email},function(){
-				location.reload();
+			$.post('/toSkip',{"email":email},function(msg){
+				if(msg){location.reload();}
+				else{
+					alert("No valid replacements found.  Entry removed");
+					location.reload();
+				};
 			})
 		}
 		</script>
