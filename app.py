@@ -60,6 +60,11 @@ def skipEmail():
 	else:
 		return Response("false",status=200,mimetype='application/json')
 
+@app.route('/addCSV',methods=['POST'])
+def parseCSV():
+	file = request.files['fileInput']
+	print file[0]
+	addToDBFromCSV()
 
 #Add a person to the database
 #Return True if added, False if they've already exist
@@ -104,10 +109,10 @@ def skipThisPerson(email):
     	return False
     person = mongo.db.ls.find_one({"email":email})
     temp = person["priority"]
-    mongo.db.people.update({"email":email},{"$set":{"priority": 0}})
+    mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
     mongo.db.ls.remove({"email": email})
     if (addToLunchSet(1)):
-    	mongo.db.people.update({"email": email}, {"$set": {"priority": temp+1}})
+    	#mongo.db.people.update({"email": email}, {"$set": {"priority": temp+1}})
     	return True
     else:
     	return False
@@ -118,6 +123,7 @@ def skipThisPerson(email):
 #Add specified number of people to the lunch set
 #Returns True upon success or false upon failure
 def addToLunchSet(number_of_additions):
+	lsIns = False
 	eligable = mongo.db.people.find({"priority": {"$gt": 0}})
 	if (eligable.count() == 0):
 		return False
@@ -125,18 +131,24 @@ def addToLunchSet(number_of_additions):
 	weightedList = []
 	for entry in eligable:
 		i = entry["priority"]
-		for j in range(i):
-			weightedList.append({"email": entry["email"]})
+		if(mongo.db.ls.find(entry).count()==0):
+			for j in range(i):
+				weightedList.append({"email": entry["email"]})
 	for k in range(number_of_additions):
-		selected = choice(weightedList)
-		mongo.db.ls.insert(mongo.db.people.find(selected))
-		lunchList.append(selected)
-		try:
-			while(1):
-				weightedList.remove(selected)
-		except:
-			pass	
-	return True
+		if (len(weightedList) >0):
+			selected = choice(weightedList)
+			mongo.db.ls.insert(mongo.db.people.find(selected))
+			lsIns = True
+			lunchList.append(selected)
+			try:
+				while(1):
+					weightedList.remove(selected)
+			except:
+				pass
+	if (lsIns):
+		return True
+	else:	
+		return False
 
 
 
@@ -160,8 +172,12 @@ def removePerson(email):
 def updatePriority():
 	for person in mongo.db.people.find():
 		if mongo.db.ls.find(person).count() == 0:
-			mongo.db.people.update({"email": person["email"]},
-								{"$set": {"priority": person["priority"]+1}})
+			if (person["priority"]<0):
+				mongo.db.people.update({"email":person["email"]},
+									{"$set":{"priority":-person["priority"]}})
+			else:
+				mongo.db.people.update({"email": person["email"]},
+									{"$set": {"priority": person["priority"]+1}})
 	return True
     
 
