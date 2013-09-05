@@ -36,9 +36,9 @@
 </form>
 </div>
 <div>
-  <form id="fileForm" enctype=multipart/form-data>
+  <form id="fileForm" enctype='multipart/form-data' action='/addCSV' method='POST'>
       <p>Or select a csv file with the form:First Name, Last Name, E-mail, Department</p> 
-      <input type="file" id="fileInput"> 
+      <input type="file" name="fileInput"> 
       <p><button class='btn btn-large btn-primary' type='type'>Submit</button></p>
   </form>
 </div>
@@ -64,19 +64,6 @@ $(document).ready(function(){
       }         
     })
     return false;
-  })
-})
-</script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-<script src="static/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-  var fileFormVar = $('#fileForm')
-  fileFormVar.submit(function(evt){
-    evt.preventDefault();
-    $.post('/addCSV',$("#fileInput").val(), function(){
-      alert("Success")
-    })
   })
 })
 </script>

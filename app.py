@@ -2,12 +2,16 @@ import flask
 from flask import Flask
 from flask import render_template,request,redirect,url_for,Response,jsonify,send_from_directory
 from flask.ext.pymongo import PyMongo
+import csv
 from random import choice
+
 
 
 appName = "LunchRoulette"
 app = Flask(appName)
 mongo = PyMongo(app)
+
+ALLOWED_EXTENSIONS = set(['csv'])
 
 @app.route('/')
 def primary():
@@ -61,10 +65,21 @@ def skipEmail():
 		return Response("false",status=200,mimetype='application/json')
 
 @app.route('/addCSV',methods=['POST'])
-def parseCSV():
-	file = request.files['fileInput']
-	print file[0]
-	addToDBFromCSV()
+def getCSV():
+	myfile = request.files['fileInput']
+	addToDBFromCSV(myfile)
+	#myfile = request.files['file']
+	#print str(myfile)
+	return redirect('/')
+
+
+
+def addToDBFromCSV(uploadFile):
+	reader = csv.reader(uploadFile, delimiter=',')
+	for row in reader:
+		mongo.db.people.insert({"first":row[0],"last":row[1],"email":row[2],"department":row[3], "priority":1})
+	return True
+
 
 #Add a person to the database
 #Return True if added, False if they've already exist
@@ -112,7 +127,6 @@ def skipThisPerson(email):
     mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
     mongo.db.ls.remove({"email": email})
     if (addToLunchSet(1)):
-    	#mongo.db.people.update({"email": email}, {"$set": {"priority": temp+1}})
     	return True
     else:
     	return False
