@@ -76,7 +76,7 @@ def getCSV():
 def addToDBFromCSV(uploadFile):
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
-		mongo.db.people.insert({"first":row[0],"last":row[1],"email":row[2],"department":row[3], "priority":1})
+		addPerson(row[0],row[1],row[2],row[3])
 	return True
 
 
