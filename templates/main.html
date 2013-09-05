@@ -21,6 +21,7 @@
 	<div id="forTemplate"></div>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 	<script src="static/js/bootstrap.min.js"></script>
+	<script src="static/js/mustache.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function(){
 		var numForm = $("#numLS")
@@ -28,22 +29,27 @@
 			evt.preventDefault();
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
 				if(msg){location.reload();}
-				else {alert("Invalid input");} //Ask about better way to refresh table without reloading the entire page
+				else {alert("Invalid input");}
 			})
 		})
+		$.get('/ls',function(data){
+			$("#forTemplate").empty();
+			var html = Mustache.render($("#lsTemplate").text(),data);
+			$("#forTemplate").append(html);
+		})
 	})
-	</script>
-	<div>
-		<script src="static/js/mustache.js"></script>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$.get('/ls',function(data){
-				$("#forTemplate").empty();
-				var html = Mustache.render($("#lsTemplate").text(),data);
-				$("#forTemplate").append(html);
+	function replaceFun(email){
+			$.post('/toSkip',{"email":email},function(msg){
+				if(msg){location.reload();}
+				else{
+					alert("No valid replacements found.  Entry removed");
+					location.reload();
+				};
 			})
-		})	
-		</script>
+		}
+	</script>
+
+	<div>
 		<script id="lsTemplate" type="text/template">
 		<p><b>Current Lunch Set</b></p>
 		<table border='1'>
@@ -57,17 +63,6 @@
 				</tr>
 			{{/lunchset}}
 		</table>
-		</script>
-		<script>
-		function replaceFun(email){
-			$.post('/toSkip',{"email":email},function(msg){
-				if(msg){location.reload();}
-				else{
-					alert("No valid replacements found.  Entry removed");
-					location.reload();
-				};
-			})
-		}
 		</script>
 	</div>
 </body>

@@ -73,7 +73,6 @@ def getCSV():
 	return redirect('/')
 
 
-
 def addToDBFromCSV(uploadFile):
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
@@ -92,10 +91,6 @@ def addPerson(first_name,last_name,email_address,department):
             return True
         else:
             return False
-
-
-
-
  
 
 #Creates new lunch set.  If lunch set already contains members,
@@ -112,14 +107,11 @@ def createNewLunchSet(number_participants):
 	return lunchList
 
 
-
-
 #If this person is in the current lunch set
 #put them back into the main database at their previous priority
 #select someone else randomly to take their place in this lunch set
 #returns True upon success, False upon failure
 def skipThisPerson(email):
-    
     if mongo.db.ls.find({"email": email}).count() == 0:
     	return False
     person = mongo.db.ls.find_one({"email":email})
@@ -130,8 +122,6 @@ def skipThisPerson(email):
     	return True
     else:
     	return False
-
-
 
 
 #Add specified number of people to the lunch set
@@ -165,8 +155,6 @@ def addToLunchSet(number_of_additions):
 		return False
 
 
-
-
 #remove this person entirely from the database.
 #Return True upon success, False when email doesn't exist in the db
 def removePerson(email):
@@ -177,8 +165,6 @@ def removePerson(email):
 	except:
 		return False
 	return True
-	
-
 
 
 #Update priorities of people not chosen in the lunch set
@@ -193,8 +179,6 @@ def updatePriority():
 				mongo.db.people.update({"email": person["email"]},
 									{"$set": {"priority": person["priority"]+1}})
 	return True
-    
-
 
 
 if __name__ == '__main__':

@@ -7,9 +7,10 @@
 </head>
 <body>
 	<form id="removeSel">
-		<select id="toRemove">
-		</select>
+		<select id="toRemove"></select>
+		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
+		<script src="static/js/bootstrap.min.js"></script>
 		<script type="text/javascript">
 		$(document).ready(function(){
 			$.get('/allEmails',
@@ -23,15 +24,8 @@
 					})
 				}
 			)
-		})
-		</script>
-		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
-	</form>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-	<script src="static/js/bootstrap.min.js"></script>
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$('#removeSel').submit(function(evt){
+			
+			$('#removeSel').submit(function(evt){
 			evt.preventDefault();
 			var opt = $("#toRemove").find("option:selected");
 			if (opt.length > 0){
@@ -40,9 +34,10 @@
 					opt.remove();
 				}
 			}
-			return true;
+				return true;
+			})
 		})
-	})
-	</script>
+		</script>
+	</form>
 </body>
 </html>
