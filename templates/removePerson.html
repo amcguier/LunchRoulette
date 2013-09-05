@@ -23,17 +23,17 @@
 							$('<option></option>').val(val).html(text));
 					})
 				}
-			)
+				)
 			
 			$('#removeSel').submit(function(evt){
-			evt.preventDefault();
-			var opt = $("#toRemove").find("option:selected");
-			if (opt.length > 0){
-				if (window.confirm("Are you sure?")){
-					$.post('/removeSelected', {"email":opt.text()});
-					opt.remove();
+				evt.preventDefault();
+				var opt = $("#toRemove").find("option:selected");
+				if (opt.length > 0){
+					if (window.confirm("Are you sure?")){
+						$.post('/removeSelected', {"email":opt.text()});
+						opt.remove();
+					}
 				}
-			}
 				return true;
 			})
 		})

@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Lunch Roulette</title>
-	 <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
 	<div class="container">
@@ -39,14 +39,14 @@
 		})
 	})
 	function replaceFun(email){
-			$.post('/toSkip',{"email":email},function(msg){
-				if(msg){location.reload();}
-				else{
-					alert("No valid replacements found.  Entry removed");
-					location.reload();
-				};
-			})
-		}
+		$.post('/toSkip',{"email":email},function(msg){
+			if(msg){location.reload();}
+			else{
+				alert("No valid replacements found.  Entry removed");
+				location.reload();
+			};
+		})
+	}
 	</script>
 
 	<div>
@@ -54,14 +54,14 @@
 		<p><b>Current Lunch Set</b></p>
 		<table border='1'>
 		<tr><td>First Name</td><td>Last Name</td><td>Email Address</td><td>Cannot attend?</td></tr>
-			{{#lunchset}}
-				<tr>
-					<td>{{first}}</td>
-					<td>{{last}}</td>
-					<td>{{email}}</td>
-					<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
-				</tr>
-			{{/lunchset}}
+		{{#lunchset}}
+		<tr>
+		<td>{{first}}</td>
+		<td>{{last}}</td>
+		<td>{{email}}</td>
+		<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
+		</tr>
+		{{/lunchset}}
 		</table>
 		</script>
 	</div>

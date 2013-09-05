@@ -30,39 +30,35 @@
  <label class="control-label" for="fourthInput">Department:</label>
  <div class="controls">
   <input type="text" id="fourthInput" placeholder="Department"/>
- </div>
+</div>
 </div>
 <p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 </form>
 </div>
 <div>
   <form id="fileForm" enctype='multipart/form-data' action='/addCSV' method='POST'>
-      <p>Or select a csv file with the form:First Name, Last Name, E-mail, Department</p> 
-      <input type="file" name="fileInput"> 
-      <input type=submit>
+    <p>Or select a csv file with the form:First Name, Last Name, E-mail, Department</p> 
+    <input type="file" name="fileInput"> 
+    <input type=submit>
   </form>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+  var success = window.location.search.substring(1);
+  if(success != ""){alert(success)}
   var inForm = $('#inputForm')
   inForm.submit(function(evt){
     evt.preventDefault();
-    $.ajax({
-      type:"POST",
-      url: '/newPerson',
-      data: {"first":$("#firstInput").val(),
+    $.post('/newPerson',{"first":$("#firstInput").val(),
       "last":$("#secondInput").val(),
       "email":$("#thirdInput").val(),
-      "department": $("#fourthInput").val()},
-      dataType:'json',
-      success: function(msg){
+      "department": $("#fourthInput").val()}, function(msg){
         if (msg){alert("Successfully added");}
-        else {alert("Already exists");} 
-        inForm[0].reset(); 
-      }         
-    })
+        else {alert("Already Exists");}
+        inForm[0].reset();
+      })
     return false;
   })
 })

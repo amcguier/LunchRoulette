@@ -67,10 +67,11 @@ def skipEmail():
 @app.route('/addCSV',methods=['POST'])
 def getCSV():
 	myfile = request.files['fileInput']
-	addToDBFromCSV(myfile)
-	#myfile = request.files['file']
-	#print str(myfile)
-	return redirect('/')
+	if (myfile != None):
+		addToDBFromCSV(myfile)
+		return redirect('/add?Success')
+	else:
+		return redirect('/add?Failure')
 
 
 def addToDBFromCSV(uploadFile):
@@ -108,8 +109,9 @@ def createNewLunchSet(number_participants):
 
 
 #If this person is in the current lunch set
-#put them back into the main database at their previous priority
-#select someone else randomly to take their place in this lunch set
+#put them back into the main database with 
+#the negation of their previous priority
+#and select someone else randomly to take their place in this lunch set
 #returns True upon success, False upon failure
 def skipThisPerson(email):
     if mongo.db.ls.find({"email": email}).count() == 0:
@@ -168,16 +170,18 @@ def removePerson(email):
 
 
 #Update priorities of people not chosen in the lunch set
+#If someone skipped, their priority is negated (again)
 #Returns True upon success
 def updatePriority():
 	for person in mongo.db.people.find():
 		if mongo.db.ls.find(person).count() == 0:
-			if (person["priority"]<0):
+			prior = person["priority"]
+			if (prior<0):
 				mongo.db.people.update({"email":person["email"]},
-									{"$set":{"priority":-person["priority"]}})
+									{"$set":{"priority":-prior}})
 			else:
 				mongo.db.people.update({"email": person["email"]},
-									{"$set": {"priority": person["priority"]+1}})
+									{"$set": {"priority": prior+1}})
 	return True
 
 
