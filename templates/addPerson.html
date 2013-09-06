@@ -47,7 +47,8 @@
 <script type="text/javascript">
 $(document).ready(function(){
   var success = window.location.search.substring(1);
-  if(success != ""){alert(success)}
+  if(success == "Success"){alert("New members successfully added")}
+  if(success == "Failure"){alert("Failed to enter new members from csv.  Please check form")}
   var inForm = $('#inputForm')
   inForm.submit(function(evt){
     evt.preventDefault();

@@ -24,27 +24,28 @@
 	<script src="static/js/mustache.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function(){
+		genTemp();
 		var numForm = $("#numLS")
 		numForm.submit(function(evt){
 			evt.preventDefault();
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
-				if(msg){location.reload();}
-				else {alert("Invalid input");}
+				if(!msg){alert("Invalid input");}
+				numForm[0].reset()
+				location.reload()
 			})
-		})
-		$.get('/ls',function(data){
-			$("#forTemplate").empty();
-			var html = Mustache.render($("#lsTemplate").text(),data);
-			$("#forTemplate").append(html);
 		})
 	})
 	function replaceFun(email){
 		$.post('/toSkip',{"email":email},function(msg){
-			if(msg){location.reload();}
-			else{
-				alert("No valid replacements found.  Entry removed");
-				location.reload();
-			};
+			if(!msg){alert("No valid replacements found.  Entry removed");}
+			location.reload();
+		})
+	}
+	function genTemp(){
+		$.get('/ls',function(data){
+			$("#forTemplate").empty();
+			var html = Mustache.render($("#lsTemplate").text(),data);
+			$("#forTemplate").append(html);
 		})
 	}
 	</script>

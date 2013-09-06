@@ -67,37 +67,42 @@ def skipEmail():
 @app.route('/addCSV',methods=['POST'])
 def getCSV():
 	myfile = request.files['fileInput']
-	if (myfile != None):
-		addToDBFromCSV(myfile)
+	if(addToDBFromCSV(myfile)):
 		return redirect('/add?Success')
 	else:
 		return redirect('/add?Failure')
 
 
 def addToDBFromCSV(uploadFile):
+	format = True
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
-		addPerson(row[0],row[1],row[2],row[3])
-	return True
+		if(len(row)<4):
+			format = False
+		else:
+			addPerson(row[0],row[1],row[2],row[3])
+	return format
+
 
 
 #Add a person to the database
 #Return True if added, False if they've already exist
 def addPerson(first_name,last_name,email_address,department):
-	if None == mongo.db.people.find_one({"email": email_address}):
-            entry = {"first": first_name,"last": last_name,
-                     "email": email_address,"department": department, 
-                     "priority": 1}
-            mongo.db.people.insert(entry)
-            return True
-        else:
-            return False
+	if (None == mongo.db.people.find_one({"email": email_address})):
+		entry = {"first": first_name,"last": last_name,
+		"email": email_address,"department": department, 
+		"priority": 1}
+		mongo.db.people.insert(entry)
+		return True
+	else:
+		return False
  
 
 #Creates new lunch set.  If lunch set already contains members,
 #their priority is set to 0 and they are removed
 #returns list of the new lunch set
 def createNewLunchSet(number_participants):
+	skippedUpdate()
 	if mongo.db.ls.find().count() != 0:
 		for person in mongo.db.ls.find():
 			mongo.db.people.update({"email": person["email"]}, 
@@ -175,14 +180,21 @@ def removePerson(email):
 def updatePriority():
 	for person in mongo.db.people.find():
 		if mongo.db.ls.find(person).count() == 0:
-			prior = person["priority"]
-			if (prior<0):
-				mongo.db.people.update({"email":person["email"]},
-									{"$set":{"priority":-prior}})
-			else:
-				mongo.db.people.update({"email": person["email"]},
-									{"$set": {"priority": prior+1}})
+			mongo.db.people.update({"email": person["email"]},
+									{"$set": {"priority": person["priority"]+1}})
 	return True
+
+#Updates priorities of skipped members
+#TODO add return
+def skippedUpdate():
+	eligable = mongo.db.people.find({"priority": {"$lt": 0}})
+	if eligable.count() == 0:
+		return
+	else:
+		for person in eligable:
+			mongo.db.people.update({"email":person["email"]},
+									{"$set":{"priority":-person["priority"]}})
+		return
 
 
 if __name__ == '__main__':
