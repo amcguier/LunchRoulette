@@ -9,6 +9,10 @@
 	<form id="removeSel">
 		<select id="toRemove"></select>
 		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
+		<div>
+			<a href="localhost:5000">View Current/Make New Lunch Set</a>
+   			<p><a href="localhost:5000/add">Add Member To Database</a></p>
+		</div>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 		<script src="static/js/bootstrap.min.js"></script>
 		<script type="text/javascript">
@@ -23,15 +27,18 @@
 							$('<option></option>').val(val).html(text));
 					})
 				}
-				)
+			)
 			
 			$('#removeSel').submit(function(evt){
 				evt.preventDefault();
 				var opt = $("#toRemove").find("option:selected");
 				if (opt.length > 0){
 					if (window.confirm("Are you sure?")){
-						$.post('/removeSelected', {"email":opt.text()});
-						opt.remove();
+						$.post('/removeSelected', {"email":opt.text()}, function(msg){
+							if(msg){alert("Member successfully removed");
+								opt.remove()}
+							else{alert('An error occurred while trying to remove.')};
+						})
 					}
 				}
 				return true;

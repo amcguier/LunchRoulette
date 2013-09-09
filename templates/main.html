@@ -5,20 +5,20 @@
 	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
-	<div class="container">
-		<form class="form-horizontal" id="numLS">
-			<div class="control-group">
-				<p>Please enter the number of participants for new lunch set:</p>
-				<label class="control-label" for="numLS"></label>
-				<div class="controls">
-					<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
-					<input type="date" id="lsDate" placeholder="When is the lunch?"/>
-					<button class="btn btn-large btn-primary" type="type">Confirm</button>
-				</div>
-			</div>
+	<div>
+		<form id="numLS">
+			<p>Please enter the number of participants for new lunch set and the date:</p>
+			<label class="control-label" for="numLS"></label>
+			<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
+			<input type="date" id="lsDate" placeholder="When is the lunch?"/>
+			<button class="btn btn-large btn-primary" type="type">Confirm</button>
 		</form>
 	</div>
 	<div id="forTemplate"></div>
+	<div>
+		<a href="localhost:5000/add">Add Member to Database</a>
+		<p><a href="localhost:5000/remove">Remove Member from Database</a></p>
+	</div>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 	<script src="static/js/bootstrap.min.js"></script>
 	<script src="static/js/mustache.js"></script>
@@ -49,22 +49,20 @@
 		})
 	}
 	</script>
-
-	<div>
-		<script id="lsTemplate" type="text/template">
+	
+	<script id="lsTemplate" type="text/template">
 		<p><b>Current Lunch Set</b></p>
 		<table border='1'>
 		<tr><td>First Name</td><td>Last Name</td><td>Email Address</td><td>Cannot attend?</td></tr>
 		{{#lunchset}}
-		<tr>
-		<td>{{first}}</td>
-		<td>{{last}}</td>
-		<td>{{email}}</td>
-		<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
+			<tr>
+			<td>{{first}}</td>
+			<td>{{last}}</td>
+			<td>{{email}}</td>
+			<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
 		</tr>
 		{{/lunchset}}
 		</table>
-		</script>
-	</div>
+	</script>
 </body>
 </html>

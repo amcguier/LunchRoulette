@@ -5,8 +5,8 @@
   <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
 </head>
 <body>
-  <p>Enter member manually</p>
-  <div class="container">
+  <p><b>Enter member manually</b></p>
+  <div>
     <form class="form-horizontal" id="inputForm"> 
      <div class="control-group">
        <label class="control-label" for="firstInput">First Name:</label>
@@ -37,18 +37,22 @@
 </div>
 <div>
   <form id="fileForm" enctype='multipart/form-data' action='/addCSV' method='POST'>
-    <p>Or select a csv file with the form:First Name, Last Name, E-mail, Department</p> 
+    <p><b>Or select a csv file with the format: First Name, Last Name, E-mail, Department</b></p> 
     <input type="file" name="fileInput"> 
     <input type=submit>
   </form>
 </div>
+<div>
+    <a href="localhost:5000">View Current/Make New Lunch Set</a>
+    <p><a href="localhost:5000/remove">Remove Member from Database</a></p>
+ </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 <script src="static/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
   var success = window.location.search.substring(1);
   if(success == "Success"){alert("New members successfully added")}
-  if(success == "Failure"){alert("Failed to enter new members from csv.  Please check form")}
+  if(success == "Failure"){alert("Failed to enter all members from csv.  Please check format")}
   var inForm = $('#inputForm')
   inForm.submit(function(evt){
     evt.preventDefault();
@@ -57,7 +61,7 @@ $(document).ready(function(){
       "email":$("#thirdInput").val(),
       "department": $("#fourthInput").val()}, function(msg){
         if (msg){alert("Successfully added");}
-        else {alert("Already Exists");}
+        else {alert("Already Exists or invalid input");}
         inForm[0].reset();
       })
     return false;

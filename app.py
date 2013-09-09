@@ -45,10 +45,13 @@ def newLS():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-	if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
-            return Response(flask.json.dumps(True),status=200,mimetype='application/json')
- 	else:
-            return Response(flask.json.dumps(False),status=200,mimetype='application/json')
+	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
+		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
+			return Response(flask.json.dumps(True),status=200,mimetype='application/json')
+		else:
+			return Response(flask.json.dumps(False),status=200,mimetype='application/json')
+	else:
+		return Response(flask.json.dumps(False),status=200,mimetype='application/json')
 
 @app.route('/removeSelected', methods=['POST'])
 def removeSelected():
@@ -184,6 +187,7 @@ def updatePriority():
 									{"$set": {"priority": person["priority"]+1}})
 	return True
 
+
 #Updates priorities of skipped members
 #TODO add return
 def skippedUpdate():
@@ -196,6 +200,11 @@ def skippedUpdate():
 									{"$set":{"priority":-person["priority"]}})
 		return
 
+
+def validatePerson(first,last,email,department):
+	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0):
+		return False
+	return True
 
 if __name__ == '__main__':
     app.run(debug=True)
