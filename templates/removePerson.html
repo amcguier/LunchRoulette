@@ -10,8 +10,8 @@
 		<select id="toRemove"></select>
 		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 		<div>
-			<a href="localhost:5000">View Current/Make New Lunch Set</a>
-   			<p><a href="localhost:5000/add">Add Member To Database</a></p>
+			<a href="http://localhost:5000">View Current/Make New Lunch Set</a>
+   			<p><a href="http://localhost:5000/add">Add Member To Database</a></p>
 		</div>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 		<script src="static/js/bootstrap.min.js"></script>
@@ -22,6 +22,7 @@
 					var dd = $('#toRemove')
 					dd.html('');
 					var people = data;
+					people.sort();
 					$.each(people,function(val,text){
 						dd.append(
 							$('<option></option>').val(val).html(text));

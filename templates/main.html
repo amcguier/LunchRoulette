@@ -7,7 +7,8 @@
 <body>
 	<div>
 		<form id="numLS">
-			<p>Please enter the number of participants for new lunch set and the date:</p>
+			<p><b>Please enter the number of participants for new lunch set and the date:</b></p>
+			<p><b>Note: Submitting 0 for the new size will clear the current lunch set</b><p>
 			<label class="control-label" for="numLS"></label>
 			<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
 			<input type="date" id="lsDate" placeholder="When is the lunch?"/>
@@ -16,8 +17,8 @@
 	</div>
 	<div id="forTemplate"></div>
 	<div>
-		<a href="localhost:5000/add">Add Member to Database</a>
-		<p><a href="localhost:5000/remove">Remove Member from Database</a></p>
+		<a href="http://localhost:5000/add">Add Member to Database</a>
+		<p><a href="http://localhost:5000/remove">Remove Member from Database</a></p>
 	</div>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
 	<script src="static/js/bootstrap.min.js"></script>
