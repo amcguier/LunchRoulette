@@ -69,6 +69,7 @@ def skipEmail():
 
 @app.route('/addCSV',methods=['POST'])
 def getCSV():
+	print "Calling script now"
 	myfile = request.files['fileInput']
 	if(addToDBFromCSV(myfile)):
 		return redirect('/add?Success')
