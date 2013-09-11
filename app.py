@@ -80,7 +80,7 @@ def addToDBFromCSV(uploadFile):
 	format = True
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
-		if(len(row)<4):
+		if(len(row)<5):
 			format = False
 		else:
 			addPerson(row[0],row[1],row[2],row[3],int(row[4]))
