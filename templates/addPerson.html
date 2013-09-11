@@ -41,6 +41,7 @@
     <input type=submit>
   </form>
 </div>
+<div id="errmsg" styles="display:none;color:red"></div>
 
 {% endblock %}
 
@@ -49,7 +50,7 @@
 $(document).ready(function(){
   var success = window.location.search.substring(1);
   if(success == "Success"){alert("New members successfully added")}
-  if(success == "Failure"){alert("Failed to enter all members from csv.  Please check format")}
+  if(success == "Failure"){$("#errmsg").css('display',"").empty().html("Failed to enter all members from csv.  Check format")}
   var inForm = $('#inputForm')
   var fiForm = $('#fileForm')
   inForm.submit(function(evt){
@@ -59,7 +60,7 @@ $(document).ready(function(){
       "email":$("#thirdInput").val(),
       "department": $("#fourthInput").val()}, function(msg){
         if (msg){alert("Successfully added:\n"+$("#firstInput").val()+" "+$("#secondInput").val());}
-        else {alert("Already Exists or invalid input");}
+        else {$("#errmsg").css('display',"").empty().html("Already Exists or invalid input")}
         inForm[0].reset();
       })
     return false;
@@ -67,15 +68,18 @@ $(document).ready(function(){
   fiForm.submit(function(evt){
     var inputFile = $('#uploadfile')[0];
     if(!inputFile){
-      alert("Couldn't find input file");
+      //alert("Couldn't find input file");
+      $("#errmsg").css('display',"").empty().html("Couldn't find input file")
       return false;
     }
     else if (!inputFile.files[0]){
-      alert("Please select file before submitting");
+      //alert("Please select file before submitting");
+      $("#errmsg").css('display',"").empty().html("Please select file before submitting")
       return false
     }
     else if (inputFile.files[0].size == 0){
-      alert("Empty file submitted");
+      //alert("Empty file submitted");
+      $("#errmsg").css('display',"").empty().html("Empty file submitted")
       return false
     }
     return true
