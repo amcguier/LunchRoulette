@@ -31,10 +31,12 @@
 		})
 	})
 	function replaceFun(email){
-		$.post('/toSkip',{"email":email},function(msg){
-			if(!msg){alert("No valid replacements found.  Entry removed");}
-	                genTemp();
-		})
+		if(confirm("Are you sure you want to replace "+email+"?")){
+			$.post('/toSkip',{"email":email},function(msg){
+				if(!msg){alert("No valid replacements found.  Entry removed");}
+	            genTemp();
+	       	})
+		}
 	}
 	function genTemp(){
 		$.get('/ls',function(data){
