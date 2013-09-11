@@ -58,7 +58,7 @@ $(document).ready(function(){
       "last":$("#secondInput").val(),
       "email":$("#thirdInput").val(),
       "department": $("#fourthInput").val()}, function(msg){
-        if (msg){alert("Successfully added");}
+        if (msg){alert("Successfully added:\n"+$("#firstInput").val()+" "+$("#secondInput").val());}
         else {alert("Already Exists or invalid input");}
         inForm[0].reset();
       })

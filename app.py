@@ -32,7 +32,7 @@ def getAllEmails():
 
 @app.route('/ls')
 def getLS():
-	js = flask.json.dumps({"lunchset":[x for x in mongo.db.ls.find({},{"first":1,"last":1,"email":1, "_id":0})]})
+	js = flask.json.dumps({"lunchset":sorted([x for x in mongo.db.ls.find({},{"first":1,"last":1,"email":1, "_id":0})],key=lambda x: x["first"])})
 	return Response(js,status=200,mimetype='application/json')
 
 @app.route('/newLS', methods=['POST'])
