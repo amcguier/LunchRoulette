@@ -45,8 +45,8 @@ def newLS():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
-		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"]):
+	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],request.form["hire"]):
+		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],request.form["hire"]):
 			return Response(flask.json.dumps(True),status=200,mimetype='application/json')
 		else:
 			return Response(flask.json.dumps(False),status=200,mimetype='application/json')
@@ -84,18 +84,18 @@ def addToDBFromCSV(uploadFile):
 		if(len(row)<4):
 			format = False
 		else:
-			addPerson(row[0],row[1],row[2],row[3])
+			addPerson(row[0],row[1],row[2],row[3],row[4])
 	return format
 
 
 
 #Add a person to the database
 #Return True if added, False if they've already exist
-def addPerson(first_name,last_name,email_address,department):
+def addPerson(first_name,last_name,email_address,department,hire):
 	if (None == mongo.db.people.find_one({"email": email_address})):
 		entry = {"first": first_name,"last": last_name,
 		"email": email_address,"department": department, 
-		"priority": 1}
+		"hire":hire, "priority": 1}
 		mongo.db.people.insert(entry)
 		return True
 	else:
@@ -202,8 +202,8 @@ def skippedUpdate():
 		return
 
 
-def validatePerson(first,last,email,department):
-	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0):
+def validatePerson(first,last,email,department,hire):
+	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0 or len(hire)==0):
 		return False
 	return True
 

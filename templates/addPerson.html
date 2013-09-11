@@ -31,6 +31,12 @@
   <input type="text" id="fourthInput" placeholder="Department"/>
 </div>
 </div>
+<div class="control-group">
+  <label class="control-label" for "fifthInput">Hired Pre-2013?</label>
+  <div class="controls">
+    <input type="checkbox" name="fifthInput" id="chkbox" value ="pre"/>
+  </div>
+</div>
 <p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 </form>
 </div>
@@ -41,7 +47,7 @@
     <input type=submit>
   </form>
 </div>
-<div id="errmsg" styles="display:none;color:red"></div>
+<div id="errmsg" style="display:none;color:red"></div>
 
 {% endblock %}
 
@@ -55,10 +61,14 @@ $(document).ready(function(){
   var fiForm = $('#fileForm')
   inForm.submit(function(evt){
     evt.preventDefault();
+    var hiredate
+    if($("#chkbox").prop('checked')) {hiredate="pre"}
+    else{hiredate = "post"}
     $.post('/newPerson',{"first":$("#firstInput").val(),
       "last":$("#secondInput").val(),
       "email":$("#thirdInput").val(),
-      "department": $("#fourthInput").val()}, function(msg){
+      "department": $("#fourthInput").val(),
+      "hire": hiredate}, function(msg){
         if (msg){alert("Successfully added:\n"+$("#firstInput").val()+" "+$("#secondInput").val());}
         else {$("#errmsg").css('display',"").empty().html("Already Exists or invalid input")}
         inForm[0].reset();
@@ -68,17 +78,14 @@ $(document).ready(function(){
   fiForm.submit(function(evt){
     var inputFile = $('#uploadfile')[0];
     if(!inputFile){
-      //alert("Couldn't find input file");
       $("#errmsg").css('display',"").empty().html("Couldn't find input file")
       return false;
     }
     else if (!inputFile.files[0]){
-      //alert("Please select file before submitting");
       $("#errmsg").css('display',"").empty().html("Please select file before submitting")
       return false
     }
     else if (inputFile.files[0].size == 0){
-      //alert("Empty file submitted");
       $("#errmsg").css('display',"").empty().html("Empty file submitted")
       return false
     }
