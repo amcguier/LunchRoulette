@@ -15,7 +15,7 @@ ALLOWED_EXTENSIONS = set(['csv'])
 
 @app.route('/')
 def primary():
-    return send_from_directory('templates','main.html')
+    return render_template('main.html')
 
 @app.route('/add')
 def addPersonPage():

@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "layout.html" %}
+{% block header %}
 	<title>Lunch Roulette</title>
-	<link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-</head>
-<body>
+{% endblock %}
+ {% block body %}
 	<div>
 		<form id="numLS">
 			<p><b>Please enter the number of participants for new lunch set and the date:</b></p>
@@ -20,8 +18,9 @@
 		<a href="add">Add Member to Database</a>
 		<p><a href="remove">Remove Member from Database</a></p>
 	</div>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-	<script src="static/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block script %}
 	<script src="static/js/mustache.js"></script>
 	<script type="text/javascript">
 	$(document).ready(function(){
@@ -32,7 +31,8 @@
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
 				if(!msg){alert("Invalid input");}
 				numForm[0].reset()
-				location.reload()
+				//location.reload()
+	                        genTemp();
 			})
 		})
 	})
@@ -46,24 +46,30 @@
 		$.get('/ls',function(data){
 			$("#forTemplate").empty();
 			var html = Mustache.render($("#lsTemplate").text(),data);
-			$("#forTemplate").append(html);
+			$("#forTemplate").html('').append(html);
 		})
 	}
 	</script>
 	
+	{% raw %}
 	<script id="lsTemplate" type="text/template">
-		<p><b>Current Lunch Set</b></p>
-		<table border='1'>
-		<tr><td>First Name</td><td>Last Name</td><td>Email Address</td><td>Cannot attend?</td></tr>
-		{{#lunchset}}
-			<tr>
-			<td>{{first}}</td>
-			<td>{{last}}</td>
-			<td>{{email}}</td>
-			<td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
-		</tr>
-		{{/lunchset}}
-		</table>
+	  <p><b>Current Lunch Set</b></p>
+	  <table class="table table-striped table-hover">
+	    <thead>
+	      <tr><th>First Name</th><th>Last Name</th><th>Email Address</th><th>Cannot attend?</th></tr>
+	    </thead>
+	    <tbody>
+	      {{#lunchset}}
+	    <tr>
+	      <td>{{first}}</td>
+	      <td>{{last}}</td>
+	      <td>{{email}}</td>
+	      <td><button class="btn btn-primary" type="type" onclick="replaceFun('{{email}}')">Replace</button></td>
+	    </tr>
+	    {{/lunchset}}
+	    </tbody>
+	  </table>
+
 	</script>
-</body>
-</html>
+	{% endraw %}
+{% endblock %}
