@@ -6,7 +6,6 @@
 	<div>
 		<form id="numLS">
 			<p><b>Please enter the number of participants for new lunch set and the date:</b></p>
-			<p><b>Note: Submitting 0 for the new size will clear the current lunch set</b><p>
 			<label class="control-label" for="numLS"></label>
 			<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
 			<input type="date" id="lsDate" placeholder="When is the lunch?"/>
@@ -27,8 +26,7 @@
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
 				if(!msg){alert("Invalid input");}
 				numForm[0].reset()
-				//location.reload()
-	                        genTemp();
+	      genTemp();
 			})
 		})
 	})
