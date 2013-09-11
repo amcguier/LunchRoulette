@@ -35,14 +35,13 @@
 	function replaceFun(email){
 		$.post('/toSkip',{"email":email},function(msg){
 			if(!msg){alert("No valid replacements found.  Entry removed");}
-			location.reload();
+	                genTemp();
 		})
 	}
 	function genTemp(){
 		$.get('/ls',function(data){
-			$("#forTemplate").empty();
 			var html = Mustache.render($("#lsTemplate").text(),data);
-			$("#forTemplate").html('').append(html);
+			$("#forTemplate").empty().append(html);
 		})
 	}
 	</script>
