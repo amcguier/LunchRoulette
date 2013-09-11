@@ -45,8 +45,8 @@ def newLS():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],request.form["hire"]):
-		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],request.form["hire"]):
+	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],int(request.form["hire"])):
+		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],int(request.form["hire"])):
 			return Response(flask.json.dumps(True),status=200,mimetype='application/json')
 		else:
 			return Response(flask.json.dumps(False),status=200,mimetype='application/json')
@@ -69,7 +69,6 @@ def skipEmail():
 
 @app.route('/addCSV',methods=['POST'])
 def getCSV():
-	print "Calling script now"
 	myfile = request.files['fileInput']
 	if(addToDBFromCSV(myfile)):
 		return redirect('/add?Success')
@@ -84,7 +83,7 @@ def addToDBFromCSV(uploadFile):
 		if(len(row)<4):
 			format = False
 		else:
-			addPerson(row[0],row[1],row[2],row[3],row[4])
+			addPerson(row[0],row[1],row[2],row[3],int(row[4]))
 	return format
 
 
@@ -112,7 +111,7 @@ def createNewLunchSet(number_participants):
 			mongo.db.people.update({"email": person["email"]}, 
 								{"$set": {"priority": 0}})
 			mongo.db.ls.remove(person)
-	lunchList = addToLunchSet(number_participants)
+	lunchList = addToLunchSet(number_participants,"")
 	updatePriority()
 	return lunchList
 
@@ -123,48 +122,71 @@ def createNewLunchSet(number_participants):
 #and select someone else randomly to take their place in this lunch set
 #returns True upon success, False upon failure
 def skipThisPerson(email):
-    if mongo.db.ls.find({"email": email}).count() == 0:
-    	return False
-    person = mongo.db.ls.find_one({"email":email})
-    temp = person["priority"]
-    mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
-    mongo.db.ls.remove({"email": email})
-    if (addToLunchSet(1)):
-    	return True
-    else:
-    	return False
+	ret = False
+	if mongo.db.ls.find({"email": email}).count() == 0:
+		return ret
+	person = mongo.db.ls.find_one({"email":email})
+	temp = person["priority"]
+	mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
+	mongo.db.ls.remove({"email": email})
+	if(person["hire"]<2013):
+		if (addToLunchSet(1,"pre")):
+			ret = True
+	else:
+		if (addToLunchSet(1,"post")):
+			ret = True
+	return ret
 
 
 #Add specified number of people to the lunch set
 #Returns True upon success or false upon failure
-def addToLunchSet(number_of_additions):
+def addToLunchSet(number_of_additions,flag):
 	lsIns = False
 	eligable = mongo.db.people.find({"priority": {"$gt": 0}})
+	eligableOld = []
+	eligableNew = []
 	if (eligable.count() == 0):
 		return False
-	lunchList = []
-	weightedList = []
 	for entry in eligable:
 		i = entry["priority"]
 		if(mongo.db.ls.find(entry).count()==0):
-			for j in range(i):
-				weightedList.append({"email": entry["email"]})
-	for k in range(number_of_additions):
-		if (len(weightedList) >0):
-			selected = choice(weightedList)
-			mongo.db.ls.insert(mongo.db.people.find(selected))
-			lsIns = True
-			lunchList.append(selected)
-			try:
-				while(1):
-					weightedList.remove(selected)
-			except:
-				pass
+			if(entry["hire"]<2013 and (flag=="" or flag=="pre")):
+				for j in range(i):
+					eligableOld.append({"email": entry["email"]})
+			if(entry["hire"]>=2013 and (flag=="" or flag=="post")):
+				for j in range(i):
+					eligableNew.append({"email": entry["email"]})
+	if(flag!=""):
+		if(flag=="pre"):
+			for k in range(number_of_additions):
+				lsIns = aTLShelper(eligableOld)
+		else:
+			for k in range(number_of_additions):
+				lsIns = aTLShelper(eligableNew)
+	else:
+		for k in range(number_of_additions/2):
+			lsIns = aTLShelper(eligableOld)
+		for k in range(number_of_additions-(number_of_additions/2)):
+			lsIns = aTLShelper(eligableNew)
 	if (lsIns):
 		return True
 	else:	
 		return False
 
+
+#Helper function to populate Lunch Set
+def aTLShelper(person_list):
+	lsIns = False;
+	if (len(person_list) >0):
+		selected = choice(person_list)
+		mongo.db.ls.insert(mongo.db.people.find(selected))
+		lsIns = True
+		try:
+			while(1):
+				person_list.remove(selected)
+		except:
+			pass
+	return lsIns
 
 #remove this person entirely from the database.
 #Return True upon success, False when email doesn't exist in the db
@@ -203,7 +225,7 @@ def skippedUpdate():
 
 
 def validatePerson(first,last,email,department,hire):
-	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0 or len(hire)==0):
+	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0):
 		return False
 	return True
 

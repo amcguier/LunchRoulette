@@ -32,9 +32,9 @@
 </div>
 </div>
 <div class="control-group">
-  <label class="control-label" for "fifthInput">Hired Pre-2013?</label>
+  <label class="control-label" for "fifthInput">Year of Employment?</label>
   <div class="controls">
-    <input type="checkbox" name="fifthInput" id="chkbox" value ="pre"/>
+    <input type="number" id="fifthInput"/>
   </div>
 </div>
 <p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
@@ -42,7 +42,7 @@
 </div>
 <div>
   <form id="fileForm" enctype='multipart/form-data' action='/addCSV' method='POST'>
-    <p><b>Or select a csv file with the format: First Name, Last Name, E-mail, Department</b></p> 
+    <p><b>Or select a csv file with the format: First Name, Last Name, E-mail, Department, Year Hired</b></p> 
     <input type="file" name="fileInput" id='uploadfile'> 
     <input type=submit>
   </form>
@@ -61,14 +61,11 @@ $(document).ready(function(){
   var fiForm = $('#fileForm')
   inForm.submit(function(evt){
     evt.preventDefault();
-    var hiredate
-    if($("#chkbox").prop('checked')) {hiredate="pre"}
-    else{hiredate = "post"}
     $.post('/newPerson',{"first":$("#firstInput").val(),
       "last":$("#secondInput").val(),
       "email":$("#thirdInput").val(),
       "department": $("#fourthInput").val(),
-      "hire": hiredate}, function(msg){
+      "hire": $("#fifthInput").val()}, function(msg){
         if (msg){alert("Successfully added:\n"+$("#firstInput").val()+" "+$("#secondInput").val());}
         else {$("#errmsg").css('display',"").empty().html("Already Exists or invalid input")}
         inForm[0].reset();
