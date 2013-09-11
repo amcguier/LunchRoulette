@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "layout.html" %}
+{% block header %}
   <title>Add Member</title>
-  <link href="static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-</head>
-<body>
+{% endblock %}
+
+{% block body %}
   <p><b>Enter member manually</b></p>
   <div>
     <form class="form-horizontal" id="inputForm"> 
@@ -46,8 +45,10 @@
     <a href="/">View Current/Make New Lunch Set</a>
     <p><a href="remove">Remove Member from Database</a></p>
  </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> 
-<script src="static/js/bootstrap.min.js"></script>
+
+{% endblock %}
+
+{% block script %}
 <script type="text/javascript">
 $(document).ready(function(){
   var success = window.location.search.substring(1);
@@ -85,5 +86,5 @@ $(document).ready(function(){
   })
 })
 </script>
-</body>
-</html>
+
+{% endblock %}
