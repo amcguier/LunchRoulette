@@ -45,8 +45,9 @@ def newLS():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],int(request.form["hire"])):
-		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],int(request.form["hire"])):
+	hireDate = parseDate(request.form["hire"])
+	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],hireDate):
+		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],hireDate):
 			return Response(flask.json.dumps(True),status=200,mimetype='application/json')
 		else:
 			return Response(flask.json.dumps(False),status=200,mimetype='application/json')
@@ -77,13 +78,16 @@ def getCSV():
 
 
 def addToDBFromCSV(uploadFile):
+	print "calling addToDBFromCSV"
+	temp = avgDate()
+	print str(temp)
 	format = True
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
 		if(len(row)<5):
 			format = False
 		else:
-			addPerson(row[0],row[1],row[2],row[3],int(row[4]))
+			addPerson(row[0],row[1],row[2],row[3],parseDate(row[4]))
 	return format
 
 
@@ -100,6 +104,10 @@ def addPerson(first_name,last_name,email_address,department,hire):
 	else:
 		return False
  
+ #Function to parse the hired date into a comparable format
+def parseDate(dateString):
+	dateList = dateString.split("/")
+	return int(dateList[1])*100+int(dateList[0])
 
 #Creates new lunch set.  If lunch set already contains members,
 #their priority is set to 0 and they are removed
@@ -129,7 +137,7 @@ def skipThisPerson(email):
 	temp = person["priority"]
 	mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
 	mongo.db.ls.remove({"email": email})
-	if(person["hire"]<2013):
+	if(person["hire"]<avgDate()):
 		if (addToLunchSet(1,"pre")):
 			ret = True
 	else:
@@ -143,6 +151,7 @@ def skipThisPerson(email):
 def addToLunchSet(number_of_additions,flag):
 	lsIns = False
 	eligable = mongo.db.people.find({"priority": {"$gt": 0}})
+	date = avgDate()
 	eligableOld = []
 	eligableNew = []
 	if (eligable.count() == 0):
@@ -150,10 +159,10 @@ def addToLunchSet(number_of_additions,flag):
 	for entry in eligable:
 		i = entry["priority"]
 		if(mongo.db.ls.find(entry).count()==0):
-			if(entry["hire"]<2013 and (flag=="" or flag=="pre")):
+			if(entry["hire"]< date and (flag=="" or flag=="pre")):
 				for j in range(i):
 					eligableOld.append({"email": entry["email"]})
-			if(entry["hire"]>=2013 and (flag=="" or flag=="post")):
+			if(entry["hire"]>= date and (flag=="" or flag=="post")):
 				for j in range(i):
 					eligableNew.append({"email": entry["email"]})
 	if(flag!=""):
@@ -224,8 +233,19 @@ def skippedUpdate():
 		return
 
 
+def avgDate():
+	datesortdb = mongo.db.people.find().sort([("hire",1)])
+	sortedList = []
+	print "what the hell"
+	for person in datesortdb:
+		print str(person["hire"])
+		sortedList.append(person["hire"])
+	return sortedList[len(sortedList)/2]
+
+
 def validatePerson(first,last,email,department,hire):
-	if(len(first) == 0 or len(last) == 0 or len(email) == 0 or len(department) == 0):
+	if(len(first) == 0 or len(last) == 0 or len(email) == 0 
+		or len(department) == 0 or hire<200000):
 		return False
 	return True
 
