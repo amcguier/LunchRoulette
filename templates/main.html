@@ -12,6 +12,8 @@
 		</form>
 	</div>
 	<div id="forTemplate"></div>
+	<div id="errmsg" style="display:none;color:red"></div>
+
 {% endblock %}
 
 {% block script %}
@@ -21,18 +23,19 @@
 		genTemp();
 		var numForm = $("#numLS")
 		numForm.submit(function(evt){
+			$("#errmsg").css('display',"").empty()
 			evt.preventDefault();
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
-				if(!msg){alert("Invalid input");}
-				numForm[0].reset()
-	      genTemp();
+				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid input");}
+					numForm[0].reset()
+	      			genTemp();
 			})
 		})
 	})
 	function replaceFun(email){
 		if(confirm("Are you sure you want to replace "+email+"?")){
 			$.post('/toSkip',{"email":email},function(msg){
-				if(!msg){alert("No valid replacements found.  Entry removed");}
+				if(!msg){$("#errmsg").css('display',"").empty().html("No valid replacements found.  Entry removed");}
 	            genTemp();
 	       	})
 		}

@@ -78,9 +78,7 @@ def getCSV():
 
 
 def addToDBFromCSV(uploadFile):
-	print "calling addToDBFromCSV"
 	temp = avgDate()
-	print str(temp)
 	format = True
 	reader = csv.reader(uploadFile, delimiter=',')
 	for row in reader:
@@ -236,9 +234,7 @@ def skippedUpdate():
 def avgDate():
 	datesortdb = mongo.db.people.find().sort([("hire",1)])
 	sortedList = []
-	print "what the hell"
 	for person in datesortdb:
-		print str(person["hire"])
 		sortedList.append(person["hire"])
 	return sortedList[len(sortedList)/2]
 

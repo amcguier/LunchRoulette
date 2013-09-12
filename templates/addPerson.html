@@ -32,7 +32,7 @@
 </div>
 </div>
 <div class="control-group">
-  <label class="control-label" for "fifthInput">Date Hired (mm/yyyy):</label>
+  <label class="control-label" for "fifthInput">Date Hired(mm/yyyy):</label>
   <div class="controls">
     <input type="text" id="fifthInput" placeholder="mm/yyyy"/>
   </div>
@@ -42,9 +42,9 @@
 </div>
 <div>
   <form id="fileForm" enctype='multipart/form-data' action='/addCSV' method='POST'>
-    <p><b>Or select a csv file with the format: First Name, Last Name, E-mail, Department, Year Hired</b></p> 
+    <p><b>Or select a csv file with the format: First Name, Last Name, E-mail, Department, Date Hired(mm/yyyy)</b></p> 
     <input type="file" name="fileInput" id='uploadfile'> 
-    <input type=submit>
+    <input type="submit">
   </form>
 </div>
 <div id="errmsg" style="display:none;color:red"></div>
