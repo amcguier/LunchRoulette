@@ -53,11 +53,13 @@
 {% block script %}
 <script type="text/javascript">
 $(document).ready(function(){
+  //File submission success or failure in URL
   var success = window.location.search.substring(1);
   if(success == "Success"){alert("New members successfully added")}
   if(success == "Failure"){$("#errmsg").css('display',"").empty().html("Failed to enter all members from csv.  Check format")}
   var inForm = $('#inputForm')
   var fiForm = $('#fileForm')
+  //On manual entry submission, post everything to newPerson and check the return
   inForm.submit(function(evt){
     evt.preventDefault();
     $.post('/newPerson',{"first":$("#firstInput").val(),
@@ -71,16 +73,20 @@ $(document).ready(function(){
       })
     return false;
   })
+  //File submission verification (sent to /addCSV)
   fiForm.submit(function(evt){
     var inputFile = $('#uploadfile')[0];
+    //No file check
     if(!inputFile){
-      $("#errmsg").css('display',"").empty().html("Couldn't find input file")
+      $("#errmsg").css('display',"").empty().html("No input file detected")
       return false;
     }
+    //No file check
     else if (!inputFile.files[0]){
       $("#errmsg").css('display',"").empty().html("Please select file before submitting")
       return false
     }
+    //Empty file check
     else if (inputFile.files[0].size == 0){
       $("#errmsg").css('display',"").empty().html("Empty file submitted")
       return false

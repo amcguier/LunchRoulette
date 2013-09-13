@@ -15,6 +15,7 @@
 {% block script %}
 	<script type="text/javascript">
 		$(document).ready(function(){
+			//Populate dropdown list with emails
 			$.get('/allEmails',
 				function(data){
 					var dd = $('#toRemove')
@@ -28,11 +29,12 @@
 				}
 			)
 			
+			//Remove selected person from DB and dropdown
 			$('#removeSel').submit(function(evt){
 				evt.preventDefault();
 				var opt = $("#toRemove").find("option:selected");
 				if (opt.length > 0){
-					if (window.confirm("Are you sure?")){
+					if (confirm("Are you sure?")){
 						$.post('/removeSelected', {"email":opt.text()}, function(msg){
 							if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
 								opt.remove()}
