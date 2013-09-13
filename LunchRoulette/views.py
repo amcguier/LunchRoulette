@@ -1,16 +1,9 @@
+from __init__ import app
+from LunchRoulette.lsLib import *
 import flask
 from flask import Flask
 from flask import render_template,request,redirect,url_for,Response,jsonify,send_from_directory
 from flask.ext.pymongo import PyMongo
-import csv
-from random import choice
-import lsLib
-
-
-
-appName = "LunchRoulette"
-app = Flask(appName)
-mongo = PyMongo(app)
 
 @app.route('/')
 def primary():
@@ -74,9 +67,3 @@ def getCSV():
 		return redirect('/add?Success')
 	else:
 		return redirect('/add?Failure')
-
-
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

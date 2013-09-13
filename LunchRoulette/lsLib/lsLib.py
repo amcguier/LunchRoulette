@@ -1,3 +1,7 @@
+import csv
+from random import choice
+
+
 def addToDBFromCSV(uploadFile):
 	temp = avgDate()
 	format = True

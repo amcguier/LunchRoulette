@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block header %}
+	<title>Remove Member</title>
+{% endblock %}
+
+{% block body %}
+  <h4>Please select person to remove</h4>
+	<form id="removeSel">
+		<select id="toRemove"></select>
+		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
+	</form>
+	
+{% endblock %}		
+
+{% block script %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$.get('/allEmails',
+				function(data){
+					var dd = $('#toRemove')
+					dd.html('');
+					var people = data;
+					people.sort();
+					$.each(people,function(val,text){
+						dd.append(
+							$('<option></option>').val(val).html(text));
+					})
+				}
+			)
+			
+			$('#removeSel').submit(function(evt){
+				evt.preventDefault();
+				var opt = $("#toRemove").find("option:selected");
+				if (opt.length > 0){
+					if (window.confirm("Are you sure?")){
+						$.post('/removeSelected', {"email":opt.text()}, function(msg){
+							if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
+								opt.remove()}
+							else{$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove.  Please try again")};
+						})
+					}
+				}
+				return true;
+			})
+		})
+		</script>
+{% endblock %} 
