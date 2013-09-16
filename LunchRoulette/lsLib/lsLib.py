@@ -18,7 +18,7 @@ def addToDBFromCSV(uploadFile):
 #Add a person to the database
 #Return True if added, False if they've already exist
 def addPerson(first_name,last_name,email_address,department,hire):
-	if (None == mongo.db.people.find_one({"email": email_address})):
+	if (mongo.db.people.find({"email": email_address}).count()==0):
 		entry = {"first": first_name,"last": last_name,
 		"email": email_address,"department": department, 
 		"hire":hire, "priority": 1}

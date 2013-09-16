@@ -9,13 +9,37 @@
 		<select id="toRemove"></select>
 		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 	</form>
-	
+	<h4> Or click to display database</h4>
+	<p><button class="btn btn-large btn-primary" type="type" id="dbTemp">Display DB</button></p>	
+	<div id="forTemplate"></div>
 {% endblock %}		
 
 {% block script %}
-	<script type="text/javascript">
+	<script src="static/js/mustache.js"></script>
+	<script type="text/javascript">	
+		
+		function genDBtemp(){
+				$.get('/db',function(data){
+					var html = Mustache.render($("#dbTemplate").text(),data);
+					$("#forTemplate").empty().append(html);
+				})
+			}
+
+		function removeFun(email,flag){
+				var ret = true;
+				if(confirm("Are you sure you want to permanently remove "+email+" from the database?")){
+					$.post('/removeSelected',{"email":email},function(msg){
+						if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove. Please try again");ret=false;}
+						if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");}
+						if(flag){genDBtemp()}
+					})
+				}
+				return ret;
+			}
+
 		$(document).ready(function(){
 			//Populate dropdown list with emails
+			$("#dbTemp").on("click",genDBtemp);
 			$.get('/allEmails',
 				function(data){
 					var dd = $('#toRemove')
@@ -29,21 +53,51 @@
 				}
 			)
 			
+
 			//Remove selected person from DB and dropdown
 			$('#removeSel').submit(function(evt){
 				evt.preventDefault();
 				var opt = $("#toRemove").find("option:selected");
 				if (opt.length > 0){
-					if (confirm("Are you sure?")){
-						$.post('/removeSelected', {"email":opt.text()}, function(msg){
-							if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
-								opt.remove()}
-							else{$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove.  Please try again")};
-						})
+					var temp = removeFun(opt.text(),false);
+					if(temp == true) {
+						opt.remove();
+						return true;
 					}
+
+					//if (confirm("Are you sure?")){
+					//	$.post('/removeSelected', {"email":opt.text()}, function(msg){
+					//		if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
+					//			opt.remove()}
+					//		else{$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove.  Please try again")};
+					//	})
+					//}
 				}
-				return true;
+				return false;
 			})
 		})
-		</script>
+	</script>
+
+	{% raw %}
+	<script id="dbTemplate" type="text/template">
+		<p><b>Current Database</b></p>
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr><th>First Name</th><th>Last Name</th><th>Email Address</th><th>Department</th><th>Remove</th></tr>
+			</thead>
+			<tbody>
+				{{#db}}
+			<tr>
+				<td>{{first}}</td>
+				<td>{{last}}</td>
+				<td>{{email}}</td>
+				<td>{{department}}</td>
+				<td><button class="btn btn-primary" type="type" onclick="removeFun('{{email}}',true)">Remove</button></td>
+			</tr>
+			{{/db}}
+			</tbody>
+		</table>
+
+	</script>
+	{% endraw %}
 {% endblock %} 

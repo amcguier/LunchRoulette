@@ -27,6 +27,11 @@ def getLS():
 	js = flask.json.dumps({"lunchset":sorted([x for x in mongo.db.ls.find({},{"first":1,"last":1,"email":1, "_id":0})],key=lambda x: x["first"])})
 	return Response(js,status=200,mimetype='application/json')
 
+@app.route('/db')
+def getDB():
+	js = flask.json.dumps({"db":sorted([x for x in mongo.db.people.find({},{"first":1,"last":1,"email":1,"department":1,"_id":0})],key=lambda x:x["first"])})
+	return Response(js,status=200,mimetype='application/json')
+
 @app.route('/newLS', methods=['POST'])
 def newLS():
 	if ((mongo.db.people.find().count()-mongo.db.ls.find().count())<(int(request.form['num']))):
