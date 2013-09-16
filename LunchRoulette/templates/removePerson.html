@@ -9,8 +9,8 @@
 		<select id="toRemove"></select>
 		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 	</form>
-	<h4> Or click to display database</h4>
-	<p><button class="btn btn-large btn-primary" type="type" id="dbTemp">Display DB</button></p>	
+	<h4> Or click below to display all</h4>
+	<p><button class="btn btn-large btn-primary" type="type" id="dbTemp">Display</button></p>	
 	<div id="forTemplate"></div>
 {% endblock %}		
 
@@ -25,12 +25,24 @@
 				})
 			}
 
+		function rmDD(email){
+			var opt = $("#toRemove")[0]
+			var optLen = opt.length;
+			for(var i=0; i<optLen;i++){
+				if(opt[i].text == email){
+					opt[i].remove()
+				}
+			}
+		}
+
 		function removeFun(email,flag){
 				var ret = true;
 				if(confirm("Are you sure you want to permanently remove "+email+" from the database?")){
 					$.post('/removeSelected',{"email":email},function(msg){
 						if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove. Please try again");ret=false;}
-						if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");}
+						if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
+							rmDD(email)
+						}
 						if(flag){genDBtemp()}
 					})
 				}
