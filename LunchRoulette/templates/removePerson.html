@@ -4,12 +4,12 @@
 {% endblock %}
 
 {% block body %}
-  <h4>Please select person to remove</h4>
+  <h4>Please select person to remove:</h4>
 	<form id="removeSel">
 		<select id="toRemove"></select>
 		<p><button class="btn btn-large btn-primary" type="type" >Confirm</button></p>
 	</form>
-	<h4> Or click below to display all</h4>
+	<h4> Or click below to display all:</h4>
 	<p><button class="btn btn-large btn-primary" type="type" id="dbTemp">Display</button></p>	
 	<div id="forTemplate"></div>
 {% endblock %}		
@@ -19,11 +19,11 @@
 	<script type="text/javascript">	
 		
 		function genDBtemp(){
-				$.get('/db',function(data){
-					var html = Mustache.render($("#dbTemplate").text(),data);
-					$("#forTemplate").empty().append(html);
-				})
-			}
+			$.get('/db',function(data){
+				var html = Mustache.render($("#dbTemplate").text(),data);
+				$("#forTemplate").empty().append(html);
+			})
+		}
 
 		function rmDD(email){
 			var opt = $("#toRemove")[0]
@@ -37,18 +37,17 @@
 		}
 
 		function removeFun(email,flag){
-				var ret = true;
-				if(confirm("Are you sure you want to permanently remove "+email+" from the database?")){
-					$.post('/removeSelected',{"email":email},function(msg){
-						if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove. Please try again");ret=false;}
-						if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
-							rmDD(email)
-						}
-						if(flag){genDBtemp()}
-					})
-				}
-				return ret;
+			if(confirm("Are you sure you want to permanently remove "+email+" from the database?")){
+				$.post('/removeSelected',{"email":email},function(msg){
+					if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove. Please try again");}
+					if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");rmDD(email);}
+					if(flag){
+						genDBtemp();
+					}
+				})
 			}
+			return ret;
+		}
 
 		$(document).ready(function(){
 			//Populate dropdown list with emails
@@ -65,28 +64,13 @@
 					})
 				}
 			)
-			
-
 			//Remove selected person from DB and dropdown
 			$('#removeSel').submit(function(evt){
 				evt.preventDefault();
 				var opt = $("#toRemove").find("option:selected");
 				if (opt.length > 0){
-					var temp = removeFun(opt.text(),false);
-					if(temp == true) {
-						opt.remove();
-						return true;
-					}
-
-					//if (confirm("Are you sure?")){
-					//	$.post('/removeSelected', {"email":opt.text()}, function(msg){
-					//		if(msg){$("#errmsg").css('display',"").empty().html("Member successfully removed");
-					//			opt.remove()}
-					//		else{$("#errmsg").css('display',"").empty().html("An error occurred while trying to remove.  Please try again")};
-					//	})
-					//}
+					removeFun(opt.text(),false);
 				}
-				return false;
 			})
 		})
 	</script>
@@ -110,7 +94,6 @@
 			{{/db}}
 			</tbody>
 		</table>
-
 	</script>
 	{% endraw %}
 {% endblock %} 
