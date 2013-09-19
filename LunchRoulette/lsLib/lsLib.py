@@ -191,3 +191,19 @@ def validatePerson(first,last,email,department,hire):
 		or len(department) == 0 or hire<200000):
 		return False
 	return True
+
+
+#Check to see if too many entries from the same department are present
+#Returns true if new member is valid, false if not
+def departmentCheck(entry):
+	DEPTCAP = 3   #!!!Change this value to change the department cap
+	valid = True
+	deptCount = 0
+	dept = entry["department"]
+	for person in db.ls.find():
+		if(person["department"]==dept):
+			deptCount+=1
+			if(deptCount>DEPTCAP):
+				valid = False
+				break
+	return valid
