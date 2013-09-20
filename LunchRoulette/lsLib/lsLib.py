@@ -21,7 +21,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
 	if (mongo.db.people.find({"email": email_address.lstrip()}).count()==0):
 		entry = {"first": first_name.lstrip(),"last": last_name.lstrip(),
 		"email": email_address.lstrip(),"department": department.lstrip(), 
-		"hire":hire, "priority": 1}
+		"hire":hire, "priority": 1, "pause":0}
 		mongo.db.people.insert(entry)
 		return True
 	else:
@@ -32,7 +32,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
 #changes from 09/2013 -> 201309
 def parseDate(dateString):
 	dateList = dateString.split("/")
-	return int(dateList[1])*100+int(dateList[0])
+	return (int(dateList[2])*10000+int(dateList[0])*100+int(dateList[1]))
 
 #Creates new lunch set.  If lunch set already contains members,
 #their priority is set to 0 and they are removed
@@ -43,6 +43,8 @@ def createNewLunchSet(number_participants):
 		for person in mongo.db.ls.find():
 			mongo.db.people.update({"email": person["email"]}, 
 								{"$set": {"priority": 0}})
+			mongo.db.people.update({"email":person["email"]},
+								{"$set": {"pause":4}})
 			mongo.db.ls.remove(person)
 	lunchList = addToLunchSet(number_participants,"")
 	updatePriority()
@@ -158,8 +160,12 @@ def removePerson(email):
 def updatePriority():
 	for person in mongo.db.people.find():
 		if mongo.db.ls.find(person).count() == 0:
-			mongo.db.people.update({"email": person["email"]},
-									{"$set": {"priority": person["priority"]+1}})
+			if (person["pause"]==0):
+				mongo.db.people.update({"email": person["email"]},
+										{"$set": {"priority": person["priority"]+1}})
+			else:
+				mongo.db.people.update({"email": person["email"]},
+										{"$set": {"pause": person["pause"]-1}})
 	return True
 
 
@@ -181,7 +187,6 @@ def avgDate():
 	sortedList = []
 	for person in datesortdb:
 		sortedList.append(person["hire"])
-	print "Sorted list contains "+str(len(sortedList))
 	return sortedList[len(sortedList)/2]
 
 
