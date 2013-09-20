@@ -27,8 +27,8 @@
 			evt.preventDefault();
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
 				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid input");}
-					numForm[0].reset()
-	      			genTemp();
+				numForm[0].reset()
+	      		genTemp();
 			})
 		})
 	})
