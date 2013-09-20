@@ -29,7 +29,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
  
 
 #Function to parse the hired date into a comparable format
-#changes from 09/2013 -> 201309
+#changes from mm/dd/yyyy -> yyyymmdd
 def parseDate(dateString):
 	dateList = dateString.split("/")
 	return (int(dateList[2])*10000+int(dateList[0])*100+int(dateList[1]))
@@ -203,12 +203,9 @@ def validatePerson(first,last,email,department,hire):
 def departmentCheck(entry):
 	DEPTCAP = 3   #!!!Change this value to change the department cap
 	valid = True
-	deptCount = 0
 	dept = entry["department"]
-	for person in db.ls.find():
-		if(person["department"]==dept):
-			deptCount+=1
-			if(deptCount>DEPTCAP):
-				valid = False
-				break
-	return valid
+	deptCount = db.ls.find({"department":dept}).count()
+	if(deptCount == DEPTCAP):
+		return False
+	else:
+		return True
