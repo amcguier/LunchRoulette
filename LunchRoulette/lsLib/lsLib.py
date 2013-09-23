@@ -1,6 +1,7 @@
 import csv
 from LunchRoulette.__init__ import mongo
 from random import choice
+import smtplib
 
 
 def addToDBFromCSV(uploadFile):
@@ -21,7 +22,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
 	if (mongo.db.people.find({"email": email_address.lstrip()}).count()==0):
 		entry = {"first": first_name.lstrip(),"last": last_name.lstrip(),
 		"email": email_address.lstrip(),"department": department.lstrip(), 
-		"hire":hire, "priority": 1, "pause":0}
+		"hire":hire, "priority": 1, "pause":0, "emailed":False}
 		mongo.db.people.insert(entry)
 		return True
 	else:
@@ -204,8 +205,38 @@ def departmentCheck(entry):
 	DEPTCAP = 3   #!!!Change this value to change the department cap
 	valid = True
 	dept = entry["department"]
-	deptCount = db.ls.find({"department":dept}).count()
+	deptCount = mongo.db.ls.find({"department":dept}).count()
 	if(deptCount == DEPTCAP):
 		return False
 	else:
 		return True
+
+
+#Send email to the current Lunch Set
+def emailLS():
+	sender = 'lr@boomtownroi.com'
+	receivers = []
+	namestring = ""
+	for person in mongo.db.ls.find():
+		if not person['emailed']:
+			receivers.append(person['email'])
+			namestring+=str("\n\t"+person['first']+" "+person['last'])
+			mongo.db.ls.update({"email": person["email"]}, 
+								{"$set": {"emailed": True}})
+
+	message = """From: Lunch Roulette <lr@boomtownroi.com>
+	To: Current Lunch Set
+	Subject: You've been chosen!
+
+	You've been invited to lunch with:
+	%s
+	""" % (namestring)
+	
+	try:
+		smtpObj = smtplib.SMTP('192.168.0.78')
+  		smtpObj.sendmail(sender, receivers, message)         
+  		print "Successfully sent email"
+  		return True
+	except smtplib.SMTPException:
+  		print "Error: unable to send email"
+  		return False
