@@ -42,7 +42,7 @@ def getDB():
 
 @app.route('/newLS', methods=['POST'])
 def newLS():
-	if ((mongo.db.people.find().count()-mongo.db.ls.find().count())<(int(request.form['num']))):
+	if ((mongo.db.people.find().count()-mongo.db.ls.find().count())<(int(request.form['num'])) or int(request.form['num'])<=0):
 		return Response(flask.json.dumps(False),status=200,mimetype='application/json')
 	else:
 		createNewLunchSet(int(request.form['num']))

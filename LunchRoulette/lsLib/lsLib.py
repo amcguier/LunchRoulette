@@ -218,9 +218,9 @@ def emailLS():
 	receivers = []
 	namestring = ""
 	for person in mongo.db.ls.find():
+		namestring+=str("\n\t"+person['first']+" "+person['last'])
 		if not person['emailed']:
 			receivers.append(person['email'])
-			namestring+=str("\n\t"+person['first']+" "+person['last'])
 			mongo.db.ls.update({"email": person["email"]}, 
 								{"$set": {"emailed": True}})
 
@@ -231,12 +231,13 @@ def emailLS():
 	You've been invited to lunch with:
 	%s
 	""" % (namestring)
-	
-	try:
-		smtpObj = smtplib.SMTP('192.168.0.78')
-  		smtpObj.sendmail(sender, receivers, message)         
-  		print "Successfully sent email"
-  		return True
-	except smtplib.SMTPException:
-  		print "Error: unable to send email"
-  		return False
+	print message #Remove this line when ready for emails
+	return True	 #remove this line when ready for emails
+	# try:
+	# 	smtpObj = smtplib.SMTP('192.168.0.78')
+ #  		smtpObj.sendmail(sender, receivers, message)         
+ #  		print "Successfully sent email"
+ #  		return True
+	# except smtplib.SMTPException:
+ #  		print "Error: unable to send email"
+ #  		return False
