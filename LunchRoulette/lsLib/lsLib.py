@@ -129,17 +129,25 @@ def addToLunchSet(number_of_additions,flag):
 #Helper function to populate Lunch Set
 def aTLShelper(person_list):
 	lsIns = False;
-	if (len(person_list) >0):
-		selected = choice(person_list)
-		mongo.db.ls.insert(mongo.db.people.find(selected))
-		lsIns = True
-		#remove all copies of selected person from weighted list
-		try:
-			while(1):
-				person_list.remove(selected)
-		except:
-			pass
-	return lsIns
+	size = len(person_list)
+	if (size >0):
+		while(lsIns == False and size>0):
+			selected = choice(person_list)
+			print "Selected = "+str(selected)
+			temp = mongo.db.people.find_one(selected)
+			print "Temp = "+str(temp)
+			temp1 = temp['department']
+			print "temp1 = "+str(temp1)
+			if departmentCheck(temp1):
+				mongo.db.ls.insert(mongo.db.people.find(selected))
+				lsIns = True
+			#remove all copies of selected person from weighted list
+			try:
+				while(1):
+					person_list.remove(selected)
+			except:
+				pass
+		return lsIns
 
 #remove this person entirely from the database.
 #Return True upon success, False when email doesn't exist in the db
@@ -201,10 +209,12 @@ def validatePerson(first,last,email,department,hire):
 
 #Check to see if too many entries from the same department are present
 #Returns true if new member is valid, false if not
-def departmentCheck(entry):
-	DEPTCAP = 3   #!!!Change this value to change the department cap
+def departmentCheck(entryDept):
+	print "In departmentCheck"
+	DEPTCAP = 2   #!!!Change this value to change the department cap
 	valid = True
-	dept = entry["department"]
+	dept = str(entryDept)
+	print "Current dept is "+dept
 	deptCount = mongo.db.ls.find({"department":dept}).count()
 	if(deptCount == DEPTCAP):
 		return False
