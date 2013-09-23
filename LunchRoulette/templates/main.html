@@ -13,8 +13,10 @@
 	</div>
 	<div id="forTemplate"></div>
 
-	<h4> Click below to email current lunch set:</h4>
+	<p><b>Click below to email current lunch set:</b></p>
 	<p><button class="btn btn-large btn-primary" type="type" id="sendmail">Email Lunch Set</button></p>
+	<p>The 'Email Lunch Set' button will only send 1 email to each person in the lunch set.</p>
+	<p>In case of a replacement, you can still click the button and it will only email the entires that haven't been sent one yet.</p>
 {% endblock %}
 
 {% block script %}
@@ -22,7 +24,8 @@
 	<script type="text/javascript">
 	function sendMailToLS(){
 		$.get('/emailCurrLS', function(msg){
-			if(!msg){$("#errmsg").css('display',"").empty().html("Failed to e-mail all members. Please check that all addresses are valid.");}
+			if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to send emails");}
+			else {alert("Emails sent successfully")}
 		})
 	}
 	function replaceFun(email){
@@ -47,7 +50,7 @@
 			$("#errmsg").css('display',"").empty()
 			evt.preventDefault();
 			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
-				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid input");}
+				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid lunch set size");}
 				numForm[0].reset()
 	      		genTemp();
 			})
@@ -57,7 +60,7 @@
 	
 	{% raw %}
 	<script id="lsTemplate" type="text/template">
-	  <p><b>Current Lunch Set</b></p>
+	  <p><b>Current Lunch Set:</b></p>
 	  <table class="table table-striped table-hover">
 	    <thead>
 	      <tr><th>First Name</th><th>Last Name</th><th>Email Address</th><th>Cannot attend?</th></tr>
