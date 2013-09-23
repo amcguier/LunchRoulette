@@ -13,25 +13,18 @@
 	</div>
 	<div id="forTemplate"></div>
 
-
+	<h4> Click below to email current lunch set:</h4>
+	<p><button class="btn btn-large btn-primary" type="type" id="sendmail">Email Lunch Set</button></p>
 {% endblock %}
 
 {% block script %}
 	<script src="static/js/mustache.js"></script>
 	<script type="text/javascript">
-	$(document).ready(function(){
-		genTemp();
-		var numForm = $("#numLS")
-		numForm.submit(function(evt){
-			$("#errmsg").css('display',"").empty()
-			evt.preventDefault();
-			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
-				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid input");}
-				numForm[0].reset()
-	      		genTemp();
-			})
+	function sendMailToLS(){
+		$.get('/emailCurrLS', function(msg){
+			if(!msg){$("#errmsg").css('display',"").empty().html("Failed to e-mail all members. Please check that all addresses are valid.");}
 		})
-	})
+	}
 	function replaceFun(email){
 		if(confirm("Are you sure you want to replace "+email+"?")){
 			$.post('/toSkip',{"email":email},function(msg){
@@ -46,6 +39,20 @@
 			$("#forTemplate").empty().append(html);
 		})
 	}
+	$(document).ready(function(){
+		genTemp();
+		$("#sendmail").on("click",sendMailToLS);
+		var numForm = $("#numLS")
+		numForm.submit(function(evt){
+			$("#errmsg").css('display',"").empty()
+			evt.preventDefault();
+			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
+				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid input");}
+				numForm[0].reset()
+	      		genTemp();
+			})
+		})
+	})
 	</script>
 	
 	{% raw %}
