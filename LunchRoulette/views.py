@@ -24,7 +24,11 @@ def getAllEmails():
 
 @app.route('/ls')
 def getLS():
-	js = flask.json.dumps({"lunchset":sorted([x for x in mongo.db.ls.find({},{"first":1,"last":1,"email":1, "_id":0})],key=lambda x: x["first"])})
+	if (mongo.db.ls.find().count() == 0):
+		dateStr = ""
+	else:
+		dateStr = mongo.db.ls.find_one()['lsDate']
+	js = flask.json.dumps({"lunchset":sorted([x for x in mongo.db.ls.find({},{"first":1,"last":1,"email":1, "_id":0})],key=lambda x: x["first"]),"lsDate":dateStr})
 	return Response(js,status=200,mimetype='application/json')
 
 @app.route('/emailCurrLS')
@@ -50,7 +54,7 @@ def newLS():
 
 @app.route('/newPerson', methods=['POST'])
 def addNewPerson():
-	hireDate = parseDate(request.form["hire"])
+	hireDate = parseHireDate(request.form["hire"])
 	if validatePerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],hireDate):
 		if addPerson(request.form["first"],request.form["last"],request.form["email"],request.form["department"],hireDate):
 			return Response(flask.json.dumps(True),status=200,mimetype='application/json')

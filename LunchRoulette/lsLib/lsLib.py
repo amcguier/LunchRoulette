@@ -31,7 +31,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
 
 #Function to parse the hired date into a comparable format
 #changes from mm/dd/yyyy -> yyyymmdd
-def parseDate(dateString):
+def parseHireDate(dateString):
 	dateList = dateString.split("/")
 	return (int(dateList[2])*10000+int(dateList[0])*100+int(dateList[1]))
 
@@ -40,6 +40,8 @@ def parseDate(dateString):
 #returns list of the new lunch set
 def createNewLunchSet(number_participants,dateStr):
 	skippedUpdate()
+	dateList = dateStr.split("-")
+	dateStrFixed = dateList[1]+"/"+dateList[2]+"/"+dateList[0]
 	if mongo.db.ls.find().count() != 0:
 		for person in mongo.db.ls.find():
 			mongo.db.people.update({"email": person["email"]}, 
@@ -47,10 +49,7 @@ def createNewLunchSet(number_participants,dateStr):
 			mongo.db.people.update({"email":person["email"]},
 								{"$set": {"pause":4}})
 			mongo.db.ls.remove(person)
-	lunchList = addToLunchSet(number_participants,"")
-	for person in mongo.db.ls.find():
-		mongo.db.ls.update({'email':person['email']},{'$set':{'lsDate':dateStr}})
-		mongo.db.ls.update({'email':person['email']},{'$set':{'emailed':False}})
+	lunchList = addToLunchSet(number_participants,"",dateStrFixed)
 	updatePriority()
 	return
 
@@ -66,24 +65,23 @@ def skipThisPerson(email):
 	#Check to see if the given email is in the current lunch set
 	if person == None:
 		return ret
-	temp = person["priority"]
 	#Increment and negate skipped person's priority (so they don't get picked again)
-	mongo.db.people.update({"email":email},{"$set":{"priority": -(temp+1)}})
+	mongo.db.people.update({"email":email},{"$set":{"priority": -(person["priority"]+1)}})
 	mongo.db.ls.remove({"email": email})
 	#Determine which set (older/newer) of employees to draw from
 	if(person["hire"]<avgDate()):
 		#Add older
-		if (addToLunchSet(1,"pre")):
+		if (addToLunchSet(1,"pre",person['lsDate'])):
 			ret = True
 	else:
-		if (addToLunchSet(1,"post")):
+		if (addToLunchSet(1,"post",person['lsDate'])):
 			ret = True
 	return ret
 
 
 #Add specified number of people to the lunch set
 #Returns True upon success or false upon failure
-def addToLunchSet(number_of_additions,flag):
+def addToLunchSet(number_of_additions,flag,dateStr):
 	lsIns = False
 	#find everyone eligable to join the lunch set
 	eligable = mongo.db.people.find({"priority": {"$gt": 0}})
@@ -110,19 +108,19 @@ def addToLunchSet(number_of_additions,flag):
 		#older employee
 		if(flag=="pre"):
 			for k in range(number_of_additions):
-				lsIns = aTLShelper(eligableOld)
+				lsIns = aTLShelper(eligableOld,dateStr)
 		#newer employee
 		else:
 			for k in range(number_of_additions):
-				lsIns = aTLShelper(eligableNew)
+				lsIns = aTLShelper(eligableNew,dateStr)
 	#add employees from both older and newer lists
 	else:
 		#get half of members from "older" list
 		for k in range(number_of_additions/2):
-			lsIns = aTLShelper(eligableOld)
+			lsIns = aTLShelper(eligableOld,dateStr)
 		#get other half from "newer" list
 		for k in range(number_of_additions-(number_of_additions/2)):
-			lsIns = aTLShelper(eligableNew)
+			lsIns = aTLShelper(eligableNew,dateStr)
 	if (lsIns):
 		return True
 	else:	
@@ -130,19 +128,17 @@ def addToLunchSet(number_of_additions,flag):
 
 
 #Helper function to populate Lunch Set
-def aTLShelper(person_list):
+def aTLShelper(person_list,dateStr):
 	lsIns = False;
 	size = len(person_list)
 	if (size >0):
 		while(lsIns == False and size>0):
 			selected = choice(person_list)
-			print "Selected = "+str(selected)
-			temp = mongo.db.people.find_one(selected)
-			print "Temp = "+str(temp)
-			temp1 = temp['department']
-			print "temp1 = "+str(temp1)
-			if departmentCheck(temp1):
-				mongo.db.ls.insert(mongo.db.people.find(selected))
+			if departmentCheck(mongo.db.people.find_one(selected)['department']):
+				newPerson = mongo.db.people.find_one(selected)
+				newPerson['emailed'] = False
+				newPerson['lsDate'] = dateStr
+				mongo.db.ls.insert(newPerson)
 				lsIns = True
 			#remove all copies of selected person from weighted list
 			try:
@@ -213,11 +209,9 @@ def validatePerson(first,last,email,department,hire):
 #Check to see if too many entries from the same department are present
 #Returns true if new member is valid, false if not
 def departmentCheck(entryDept):
-	print "In departmentCheck"
 	DEPTCAP = 2   #!!!Change this value to change the department cap
 	valid = True
 	dept = str(entryDept)
-	print "Current dept is "+dept
 	deptCount = mongo.db.ls.find({"department":dept}).count()
 	if(deptCount == DEPTCAP):
 		return False
@@ -231,8 +225,6 @@ def emailLS():
 	receivers = []
 	namestring = ""
 	dateStr = mongo.db.ls.find_one()['lsDate']
-	dateList = dateStr.split("-")
-	dateStr = dateList[1]+"/"+dateList[2]+"/"+dateList[0]
 	for person in mongo.db.ls.find():
 		namestring+=str("\n\t"+person['first']+" "+person['last'])
 		if not person['emailed']:
