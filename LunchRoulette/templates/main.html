@@ -5,9 +5,10 @@
  {% block body %}
 	<div>
 		<form id="numLS">
-			<p><b>Enter the number of participants for new lunch set:</b></p>
+			<p><b>Enter the number of participants for the new lunch set and the date the lunch occurs:</b></p>
 			<label class="control-label" for="numLS"></label>
 			<input type="number" id="numInNewLS" placeholder="Size of new lunch set"/>
+			<input type="date" id="lsDate"/>
 			<button class="btn btn-large btn-primary" type="type">Confirm</button>
 		</form>
 	</div>
@@ -49,8 +50,8 @@
 		numForm.submit(function(evt){
 			$("#errmsg").css('display',"").empty()
 			evt.preventDefault();
-			$.post('/newLS',{"num":$('#numInNewLS').val()},function(msg){
-				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid lunch set size");}
+			$.post('/newLS',{"num":$('#numInNewLS').val(),"lsDate":$('#lsDate').val()},function(msg){
+				if(!msg){$("#errmsg").css('display',"").empty().html("Invalid lunch set size or date");}
 				numForm[0].reset()
 	      		genTemp();
 			})
