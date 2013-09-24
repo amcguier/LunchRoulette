@@ -209,7 +209,7 @@ def validatePerson(first,last,email,department,hire):
 #Check to see if too many entries from the same department are present
 #Returns true if new member is valid, false if not
 def departmentCheck(entryDept):
-	DEPTCAP = 2   #!!!Change this value to change the department cap
+	DEPTCAP = 3   #!!!Change this value to change the department cap
 	valid = True
 	dept = str(entryDept)
 	deptCount = mongo.db.ls.find({"department":dept}).count()
@@ -251,7 +251,11 @@ Contact Will Munce (will@boomtownroi.com) to be thrown back into the shuffle
 Have a good time!
 """ % (namestring,dateStr)
 	print message #Remove this line when ready for emails
+	print str(receivers)
 	return True	 #remove this line when ready for emails
+
+	#add if len(receivers)<1 check
+
 	# try:
 	# 	smtpObj = smtplib.SMTP('192.168.0.78')
  #  		smtpObj.sendmail(sender, receivers, message)         
