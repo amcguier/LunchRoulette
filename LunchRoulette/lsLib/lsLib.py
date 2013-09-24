@@ -22,7 +22,7 @@ def addPerson(first_name,last_name,email_address,department,hire):
 	if (mongo.db.people.find({"email": email_address.lstrip()}).count()==0):
 		entry = {"first": first_name.lstrip(),"last": last_name.lstrip(),
 		"email": email_address.lstrip(),"department": department.lstrip(), 
-		"hire":hire, "priority": 1, "pause":0, "emailed":False}
+		"hire":hire, "priority": 1, "pause":0}
 		mongo.db.people.insert(entry)
 		return True
 	else:
@@ -38,7 +38,7 @@ def parseDate(dateString):
 #Creates new lunch set.  If lunch set already contains members,
 #their priority is set to 0 and they are removed
 #returns list of the new lunch set
-def createNewLunchSet(number_participants):
+def createNewLunchSet(number_participants,dateStr):
 	skippedUpdate()
 	if mongo.db.ls.find().count() != 0:
 		for person in mongo.db.ls.find():
@@ -48,6 +48,9 @@ def createNewLunchSet(number_participants):
 								{"$set": {"pause":4}})
 			mongo.db.ls.remove(person)
 	lunchList = addToLunchSet(number_participants,"")
+	for person in mongo.db.ls.find():
+		mongo.db.ls.update({'email':person['email']},{'$set':{'lsDate':dateStr}})
+		mongo.db.ls.update({'email':person['email']},{'$set':{'emailed':False}})
 	updatePriority()
 	return
 
@@ -202,7 +205,7 @@ def avgDate():
 #Check input for blank fields/primitave date check
 def validatePerson(first,last,email,department,hire):
 	if(len(first) == 0 or len(last) == 0 or len(email) == 0 
-		or len(department) == 0 or hire<200000):
+		or len(department) == 0):
 		return False
 	return True
 
@@ -224,9 +227,12 @@ def departmentCheck(entryDept):
 
 #Send email to the current Lunch Set
 def emailLS():
-	sender = 'lr@boomtownroi.com'
+	sender = 'talent@boomtownroi.com'
 	receivers = []
 	namestring = ""
+	dateStr = mongo.db.ls.find_one()['lsDate']
+	dateList = dateStr.split("-")
+	dateStr = dateList[1]+"/"+dateList[2]+"/"+dateList[0]
 	for person in mongo.db.ls.find():
 		namestring+=str("\n\t"+person['first']+" "+person['last'])
 		if not person['emailed']:
@@ -234,13 +240,24 @@ def emailLS():
 			mongo.db.ls.update({"email": person["email"]}, 
 								{"$set": {"emailed": True}})
 
-	message = """From: Lunch Roulette <lr@boomtownroi.com>
-	To: Current Lunch Set
-	Subject: You've been chosen!
+	message = """From: BoomTown Talent <talent@boomtownroi.com>
+To: Current Lunch Set
+Subject: You've been chosen by Lunch Roulette!
 
-	You've been invited to lunch with:
-	%s
-	""" % (namestring)
+Hello!
+
+Lunch Roulette has selected YOU to go to lunch!
+The lunch group will be:
+%s
+
+on %s!
+
+If you have a scheduling conflict, too bad.
+
+Just kidding.  
+Contact Will Munce (will@boomtownroi.com) to be thrown back into the shuffle
+Have a good time!
+""" % (namestring,dateStr)
 	print message #Remove this line when ready for emails
 	return True	 #remove this line when ready for emails
 	# try:
