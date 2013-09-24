@@ -25,7 +25,7 @@
 	<script type="text/javascript">
 	function sendMailToLS(){
 		$.get('/emailCurrLS', function(msg){
-			if(!msg){$("#errmsg").css('display',"").empty().html("An error occurred while trying to send emails");}
+			if(!msg){$("#errmsg").css('display',"").empty().html("Failed to send any new emails");}
 			else {alert("Emails sent successfully")}
 		})
 	}

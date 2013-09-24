@@ -250,17 +250,18 @@ Just kidding.
 Contact Will Munce (will@boomtownroi.com) to be thrown back into the shuffle
 Have a good time!
 """ % (namestring,dateStr)
-	print message #Remove this line when ready for emails
-	print str(receivers)
-	return True	 #remove this line when ready for emails
+	# print message #Remove this line when ready for emails
+	# print str(receivers)
+	# return True	 #remove this line when ready for emails
 
-	#add if len(receivers)<1 check
+	if (len(receivers) == 0):
+		return False
 
-	# try:
-	# 	smtpObj = smtplib.SMTP('192.168.0.78')
- #  		smtpObj.sendmail(sender, receivers, message)         
- #  		print "Successfully sent email"
- #  		return True
-	# except smtplib.SMTPException:
- #  		print "Error: unable to send email"
- #  		return False
+	try:
+		smtpObj = smtplib.SMTP('192.168.0.78')
+  		smtpObj.sendmail(sender, receivers, message)         
+  		print "Successfully sent email"
+  		return True
+	except smtplib.SMTPException:
+  		print "Error: unable to send email"
+  		return False
