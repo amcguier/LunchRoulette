@@ -12,7 +12,7 @@ def addToDBFromCSV(uploadFile):
 		if(len(row)<5):
 			format = False
 		else:
-			addPerson(row[0],row[1],row[2],row[3],parseDate(row[4]))
+			addPerson(row[0],row[1],row[2],row[3],parseHireDate(row[4]))
 	return format
 
 
