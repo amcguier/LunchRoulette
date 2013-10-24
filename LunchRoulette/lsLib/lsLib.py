@@ -258,7 +258,8 @@ Have a good time!
 		return False
 
 	try:
-		smtpObj = smtplib.SMTP('192.168.0.78')
+		smtpObj = smtplib.SMTP('HMS1.BoomTownROI.Com')
+		smtpObj.login("bulkmail","StarField1232")
   		smtpObj.sendmail(sender, receivers, message)         
   		print "Successfully sent email"
   		return True
