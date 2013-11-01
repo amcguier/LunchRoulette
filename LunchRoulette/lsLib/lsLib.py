@@ -230,12 +230,9 @@ def emailLS():
 	smtpObj.login("bulkmail","StarField1232")
 	sender = 'Talent@boomtownroi.com'
 
-#	namestring = ""
-#	dateStr = mongo.db.ls.find_one()['lsDate']
 	for person in mongo.db.ls.find():
 		message=""
 		member = person["first"]+" "+person["last"]
-#		namestring+=str("\n\t"+person['first']+" "+person['last'])
 		if not person['emailed']:
 			o = open(filePath)
 			mongo.db.ls.update({"email": person["email"]}, 
