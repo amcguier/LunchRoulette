@@ -225,7 +225,7 @@ def departmentCheck(entryDept):
 #Send email to the current Lunch Set
 def emailLS():
 	ret = True
-	filePath = os.path.join(os.getcwd(),"LunchRoulette\\templates\\BT-HungerGames-Email-fixed.html")
+	filePath = os.path.join(os.getcwd(),"LunchRoulette\\templates\\templateEmail.html")
 	smtpObj = smtplib.SMTP('HMS1.BoomTownROI.Com')
 	smtpObj.login("bulkmail","StarField1232")
 	sender = 'Talent@boomtownroi.com'
