@@ -2,6 +2,9 @@ import csv
 from LunchRoulette.__init__ import mongo
 from random import choice
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import os
 
 
 def addToDBFromCSV(uploadFile):
@@ -221,48 +224,36 @@ def departmentCheck(entryDept):
 
 #Send email to the current Lunch Set
 def emailLS():
-	sender = 'talent@boomtownroi.com'
-	receivers = []
-	namestring = ""
-	dateStr = mongo.db.ls.find_one()['lsDate']
+	ret = True
+	filePath = os.path.join(os.getcwd(),"LunchRoulette\\templates\\BT-HungerGames-Email-fixed.html")
+	smtpObj = smtplib.SMTP('HMS1.BoomTownROI.Com')
+	smtpObj.login("bulkmail","StarField1232")
+	sender = 'Talent@boomtownroi.com'
+
+#	namestring = ""
+#	dateStr = mongo.db.ls.find_one()['lsDate']
 	for person in mongo.db.ls.find():
-		namestring+=str("\n\t"+person['first']+" "+person['last'])
+		message=""
+		member = person["first"]+" "+person["last"]
+#		namestring+=str("\n\t"+person['first']+" "+person['last'])
 		if not person['emailed']:
-			receivers.append(person['email'])
+			o = open(filePath)
 			mongo.db.ls.update({"email": person["email"]}, 
 								{"$set": {"emailed": True}})
+			for line in o:
+				message+=line.replace("Insert name here",member)
+			o.close()
+			MESSAGE = MIMEMultipart('alternative')
+			MESSAGE['subject'] = "You've been selected!"
+			MESSAGE['To'] = person['email']
+			MESSAGE['From'] = sender
+			HTML_BODY = MIMEText(message, 'html')
+			MESSAGE.attach(HTML_BODY)
 
-	message = """From: BoomTown Talent <talent@boomtownroi.com>
-To: Current Lunch Set
-Subject: You've been chosen by Lunch Roulette!
-
-Hello!
-
-Lunch Roulette has selected YOU to go to lunch!
-The lunch group will be:
-%s
-
-on %s!
-
-If you have a scheduling conflict, too bad.
-
-Just kidding.  
-Contact Will Munce (will@boomtownroi.com) to be thrown back into the shuffle
-Have a good time!
-""" % (namestring,dateStr)
-	# print message #Remove this line when ready for emails
-	# print str(receivers)
-	# return True	 #remove this line when ready for emails
-
-	if (len(receivers) == 0):
-		return False
-
-	try:
-		smtpObj = smtplib.SMTP('HMS1.BoomTownROI.Com')
-		smtpObj.login("bulkmail","StarField1232")
-  		smtpObj.sendmail(sender, receivers, message)         
-  		print "Successfully sent email"
-  		return True
-	except smtplib.SMTPException:
-  		print "Error: unable to send email"
-  		return False
+			try:
+  				smtpObj.sendmail(sender, [person['email']], MESSAGE.as_string())         
+  				print "Successfully sent email"
+			except smtplib.SMTPException:
+  				print "Error: unable to send email for "+member
+  				ret = False
+  	return ret
